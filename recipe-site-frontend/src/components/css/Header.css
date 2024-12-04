@@ -1,0 +1,65 @@
+/* src/components/Header.css */
+.header {
+    width: 100%;
+    margin: 0 auto;
+    padding: 15px 30px; /* Уменьшены отступы для компактности */
+    background-color: #28a745; /* Основной зеленый фон */
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 8px; /* Закруглим углы */
+    box-sizing: border-box;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Легкая тень для 3D эффекта */
+    transition: all 0.3s ease-in-out; /* Плавные анимации */
+}
+
+.header:hover {
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Увеличенная тень при наведении */
+}
+
+.header h1 {
+    font-size: 2rem;
+    font-weight: bold;
+    margin: 0;
+    font-family: 'Poppins', sans-serif; /* Применим шрифт Poppins для современного вида */
+}
+
+.header button {
+    padding: 10px 20px;
+    background-color: #d9534f; /* Красная кнопка */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    transition: background-color 0.3s ease, transform 0.3s ease; /* Плавные переходы */
+    white-space: nowrap; /* Чтобы текст кнопки не переносился */
+}
+
+.header button:hover {
+    background-color: #c9302c; /* Темно-красный при наведении */
+    transform: scale(1.1); /* Легкое увеличение при наведении */
+}
+
+.header button:focus {
+    outline: none; /* Убираем обводку при фокусе */
+}
+
+@media (max-width: 768px) {
+    .header {
+        flex-direction: column; /* В мобильной версии элементы будут выстраиваться вертикально */
+        text-align: center;
+        padding: 15px 20px;
+    }
+
+    .header h1 {
+        font-size: 1.5rem; /* Уменьшаем размер текста для мобильных устройств */
+    }
+
+    .header button {
+        width: auto; /* Убираем растягивание кнопки на всю ширину */
+        margin-top: 10px; /* Отступ сверху для кнопки */
+    }
+}

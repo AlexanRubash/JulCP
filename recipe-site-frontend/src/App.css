@@ -1,0 +1,42 @@
+/* src/App.css */
+.search-container {
+    padding: 20px;
+    margin: 0 auto;
+}
+
+.recipe-list {
+    margin-bottom: 40px;
+}
+
+.recipe-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.recipe-item {
+    width: calc(33.33% - 13px); /* Три элемента в ряду */
+    border: 1px solid #ddd;
+    padding: 10px;
+    box-sizing: border-box;
+    background-color: #f9f9f9;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.recipe-item h4 {
+    font-size: 18px;
+    margin: 0;
+}
+
+.recipe-item p {
+    margin: 5px 0;
+}
+
+.error {
+    color: red;
+}
+
+button:disabled {
+    background-color: #ddd;
+}

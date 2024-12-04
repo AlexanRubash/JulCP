@@ -1,0 +1,52 @@
+/* src/components/RecipeItem.css */
+.recipe-item {
+    width: 300px;
+    border: 1px solid #ddd;
+    padding: 15px;
+    background-color: #fff;
+    border-radius: 8px;
+    text-align: center;
+    transition: box-shadow 0.3s ease-in-out;
+}
+/* Рецепты */
+.recipe-list {
+    margin-top: 30px;
+    width: 100%; /* Сделать список рецептов на всю ширину */
+    background-color: #d1e8d1; /* Фон для списка рецептов */
+    border-radius: 14px; /* Закруглим углы */
+    padding: 20px;
+}
+/* Горизонтальное расположение элементов рецептов */
+.recipe-grid {
+    display: flex;
+    flex-wrap: wrap; /* Перенос элементов на новый ряд, если не хватает места */
+    gap: 20px;
+    justify-content: flex-start;
+}
+.recipe-item:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.recipe-item h4 {
+    font-size: 20px;
+    color: #333;
+    margin: 10px 0;
+}
+
+.recipe-item p {
+    color: #555;
+    font-size: 14px;
+    margin: 5px 0;
+}
+
+.recipe-image {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.recipe-thumbnail {
+    max-width: 100%;
+    height: auto;
+    border-radius: 5px;
+    object-fit: cover;
+}

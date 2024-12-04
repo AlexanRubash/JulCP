@@ -1,0 +1,90 @@
+/* src/styles.css */
+body {
+    font-family: 'Poppins', sans-serif; /* Современный шрифт */
+    margin: 0;
+    padding: 0;
+    background: #eaf2e1; /* Легкий зеленоватый фон */
+    overflow-x: hidden; /* Убираем горизонтальную прокрутку */
+}
+
+.App {
+    justify-content: flex-start; /* Выровнять элементы по левому краю */
+    padding: 20px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.form-container {
+    width: 100%; /* Использовать всю ширину экрана */
+    max-width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin: 0;
+}
+
+/* Формы */
+form {
+    border: 1px solid #ccc;
+    padding: 20px;
+    border-radius: 8px;
+    background-color: #fff;
+    width: 100%; /* Форма будет занимать всю доступную ширину */
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* Поле ввода */
+input {
+    display: block;
+    width: 100%;
+    margin-bottom: 12px;
+    padding: 12px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    box-sizing: border-box;
+}
+
+/* Кнопка */
+button {
+    padding: 12px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+button:hover {
+   background-color: #218838;
+}
+button:hover {
+    transform: scale(1.1); /* Легкое увеличение при наведении */
+}
+button:disabled {
+    background-color: #ddd;
+}
+
+/* Стили для поисковой страницы */
+.search-container {
+    width: 100%;
+    padding: 20px;
+    box-sizing: border-box;
+}
+/* src/styles.css (или отдельный файл для медиазапросов) */
+@media (max-width: 768px) {
+    .recipe-item {
+        width: calc(50% - 20px); /* 2 элемента в ряду */
+    }
+}
+
+@media (max-width: 480px) {
+    .recipe-item {
+        width: 100%; /* 1 элемент в ряду на маленьких экранах */
+    }
+}
