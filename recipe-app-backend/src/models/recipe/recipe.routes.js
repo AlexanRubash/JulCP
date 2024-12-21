@@ -18,4 +18,10 @@ router.post('/exact/from-string', authenticateToken, recipeController.getRecipes
 // Маршрут для получения рецептов по частичному совпадению продуктов из строки
 router.post('/partial/from-string', authenticateToken, recipeController.getRecipesByPartialProductsFromString);
 
+// Новый маршрут для получения рецепта по имени
+router.get('/name/:name', authenticateToken, recipeController.getRecipeByName);
+
+// Новый маршрут для получения рецептов по тегу
+router.post('/tags', authenticateToken, recipeController.getRecipesByTags);
+
 module.exports = router;

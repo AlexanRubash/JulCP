@@ -16,7 +16,6 @@ body {
 
 .form-container {
     width: 100%; /* Использовать всю ширину экрана */
-    max-width: 100%;
     display: flex;
     flex-direction: column;
     gap: 20px;
@@ -25,20 +24,24 @@ body {
 
 /* Формы */
 form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
     border: 1px solid #ccc;
-    padding: 20px;
     border-radius: 8px;
+    padding: 30px 20px;
     background-color: #fff;
-    width: 100%; /* Форма будет занимать всю доступную ширину */
-    max-width: 600px;
-    margin: 0 auto;
+    margin: 0;
+}
+form h2{
+    align-self: center;
+    margin:0;
 }
 
 /* Поле ввода */
 input {
     display: block;
     width: 100%;
-    margin-bottom: 12px;
     padding: 12px;
     font-size: 16px;
     border-radius: 5px;
@@ -63,17 +66,13 @@ button {
 button:hover {
    background-color: #218838;
 }
-button:hover {
-    transform: scale(1.1); /* Легкое увеличение при наведении */
-}
 button:disabled {
     background-color: #ddd;
 }
 
 /* Стили для поисковой страницы */
 .search-container {
-    width: 100%;
-    padding: 20px;
+    padding: 20px 0;
     box-sizing: border-box;
 }
 /* src/styles.css (или отдельный файл для медиазапросов) */

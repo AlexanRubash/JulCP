@@ -3,8 +3,9 @@ const recipeService = require('./recipe.service');
 // 1. Получение всех данных о рецепте по его id
 const getRecipeById = async (req, res) => {
     const { id } = req.params;
+    const userId =req.user.user_id;
     try {
-        const recipe = await recipeService.fetchRecipeById(id);
+        const recipe = await recipeService.fetchRecipeById(id, userId);
         if (!recipe) {
             return res.status(404).json({ message: 'Recipe not found' });
         }
@@ -82,6 +83,8 @@ const getRecipesByExactProductsFromString = async (req, res) => {
 // 3. Получение рецептов по частичному совпадению продуктов (список продуктов через запятую)
 const getRecipesByPartialProductsFromString = async (req, res) => {
     const { products } = req.body; // Получаем строку продуктов
+    const limit = req.body.limit;
+    const offset = req.body.offset;
     if (!products || typeof products !== 'string') {
         return res.status(400).json({ message: 'Invalid input: products must be a string' });
     }
@@ -97,7 +100,7 @@ const getRecipesByPartialProductsFromString = async (req, res) => {
         }
 
         // Используем исправленную логику для поиска рецептов
-        const recipes = await recipeService.fetchRecipesByPartialProducts(productIds);
+        const recipes = await recipeService.fetchRecipesByPartialProducts(productIds, limit, offset);
         res.status(200).json(recipes);
     } catch (error) {
         console.error(error);
@@ -105,6 +108,41 @@ const getRecipesByPartialProductsFromString = async (req, res) => {
     }
 };
 
+const getRecipeByName = async (req, res) => {
+    const { name } = req.params;
+    try {
+        const recipe = await recipeService.fetchRecipeByName(name);
+        if (!recipe) {
+            return res.status(404).json({ message: 'Recipe not found' });
+        }
+        res.status(200).json(recipe);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+const getRecipesByTags = async (req, res) => {
+    const { tags } = req.body; // Ожидаем массив тегов в теле запроса
+    const limit = req.body.limit;
+    const offset = req.body.offset;
+    if (!tags || !Array.isArray(tags) || tags.length === 0) {
+        return res.status(400).json({ message: 'Invalid input: tags must be a non-empty array' });
+    }
+
+    try {
+        const recipes = await recipeService.fetchRecipesByTags(tags, limit, offset);
+
+        if (!recipes.length) {
+            return res.status(404).json({ message: 'No recipes found for these tags' });
+        }
+
+        res.status(200).json(recipes);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
 
 // Экспорт функций
 module.exports = {
@@ -112,5 +150,7 @@ module.exports = {
     getRecipesByExactProducts,
     getRecipesByPartialProducts,
     getRecipesByExactProductsFromString,
-    getRecipesByPartialProductsFromString
+    getRecipesByPartialProductsFromString,
+    getRecipeByName,  // Новый экспорт
+    getRecipesByTags
 };

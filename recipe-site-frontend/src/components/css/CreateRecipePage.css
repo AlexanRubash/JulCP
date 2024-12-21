@@ -1,0 +1,124 @@
+
+
+/* Заголовок */
+.create-recipe-container h2 {
+    text-align: center;
+    font-size: 26px;
+    color: #333;
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+/* Кнопка для создания рецепта */
+.create-recipe-button {
+    background-color: #6f42c1; /* Фиолетовая кнопка */
+}
+
+.create-recipe-button:hover {
+    background-color: #5a34a6;
+    transform: scale(1.1);
+}
+
+/* Кнопка для "Мои рецепты" */
+.my-recipes-button {
+    background-color: #20c997; /* Бирюзовая кнопка */
+}
+
+.my-recipes-button:hover {
+    background-color: #1ba987;
+    transform: scale(1.1);
+}
+
+/* Поля ввода и текстовые области */
+.create-recipe-container form input,
+.create-recipe-container form textarea,
+.create-recipe-container form select {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    font-size: 16px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-sizing: border-box;
+    transition: border-color 0.3s ease;
+}
+
+.create-recipe-container form input:focus,
+.create-recipe-container form textarea:focus {
+    border-color: #28a745; /* Зеленая рамка при фокусе */
+    outline: none;
+}
+
+/* Секция "Products" и "Tags" */
+.create-recipe-container h3 {
+    font-size: 20px;
+    color: #555;
+    margin-top: 20px;
+}
+
+/* Кнопки */
+.create-recipe-container button {
+    background-color: #28a745; /* Зеленая кнопка */
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    display: inline-block;
+    margin-top: 10px;
+}
+
+.create-recipe-container button:hover {
+    background-color: #218838; /* Темнее при наведении */
+    transform: scale(1.05); /* Эффект увеличения */
+}
+
+/* Стиль для кнопки удаления */
+.create-recipe-container .product-item button {
+    background-color: #dc3545; /* Красный цвет для удаления */
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.create-recipe-container .product-item button:hover {
+    background-color: #c82333;
+}
+
+/* Элементы внутри секций продуктов и шагов */
+.create-recipe-container .product-item,
+.create-recipe-container .step-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.create-recipe-container .product-item input {
+    flex: 1; /* Растягиваем поле ввода количества */
+}
+
+/* Поле загрузки файлов */
+.create-recipe-container input[type="file"] {
+    margin-top: 5px;
+    border: none;
+}
+
+/* Уведомления об ошибке и успехе */
+.create-recipe-container .error {
+    color: red;
+    font-weight: bold;
+    margin-top: 15px;
+    text-align: center;
+}
+
+.create-recipe-container .success {
+    color: green;
+    font-weight: bold;
+    margin-top: 15px;
+    text-align: center;
+}

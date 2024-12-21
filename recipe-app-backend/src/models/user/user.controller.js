@@ -95,6 +95,25 @@ const deleteRecipe = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+const getFavoriteRecipes = async (req, res) => {
+    try {
+        const recipes = await repository.getFavoriteRecipes(req.user.user_id);
+        res.status(200).json(recipes);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error retrieving favorite recipes' });
+    }
+};
+
+const getUserRecipes = async (req, res) => {
+    try {
+        const recipes = await repository.getUserRecipes(req.user.user_id);
+        res.status(200).json(recipes);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error retrieving favorite recipes' });
+    }
+};
 
 const addFavoriteRecipe = async (req, res) => {
     try {
@@ -145,16 +164,40 @@ const deleteProduct = async (req, res) => {
         res.status(500).json({ message: 'Error deleting product' });
     }
 };
+const getUserProducts = async (req, res) => {
+    try {
+        const products = await repository.getUserProducts(req.user.user_id); // Получаем ID пользователя из токена
+        res.status(200).json(products);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error retrieving products' });
+    }
+};
+
+const getUserProductById = async (req, res) => {
+    try {
+        const product = await repository.getUserProductById(req.params.id, req.user.user_id); // Получаем ID продукта из параметров
+        if (!product) {
+            return res.status(404).json({ message: 'Product not found' });
+        }
+        res.status(200).json(product);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error retrieving product' });
+    }
+};
 
 module.exports = {
     createRecipe,
     updateRecipe,
     deleteRecipe,
+    getUserProducts,
+    getUserProductById,
     logoutUser,
     addFavoriteRecipe,
     removeFavoriteRecipe,
     createProduct,
     updateProduct,
     deleteProduct,
-    registerUser, loginUser, refreshAccessToken
+    registerUser, loginUser, refreshAccessToken, getFavoriteRecipes,getUserRecipes
 };

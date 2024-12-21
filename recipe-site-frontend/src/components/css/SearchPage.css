@@ -1,0 +1,54 @@
+/* src/App.css */
+.search-container {
+    padding: 20px;
+    max-width: 100%;
+    margin: 0;
+}
+
+.recipe-list {
+    margin-bottom: 40px;
+}
+
+.recipe-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.recipe-item {
+    width: calc(50% - 10px); /* Два элемента в ряду */
+    border: 1px solid #ddd;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.recipe-item h4 {
+    font-size: 18px;
+    margin: 0;
+}
+
+.recipe-item p {
+    margin: 5px 0;
+}
+
+.error {
+    color: red;
+}
+
+/* Добавляем стиль для кнопки "Загрузить еще" */
+.load-more {
+    display: block; /* Делает кнопку блочным элементом */
+    margin: 20px auto; /* Центрирует кнопку */
+    padding: 10px 20px;
+    background-color: #4CAF50; /* Зеленый цвет фона */
+    color: white;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.load-more:hover {
+    background-color: #45a049; /* Немного темнее при наведении */
+}

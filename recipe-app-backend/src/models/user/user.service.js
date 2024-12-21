@@ -2,6 +2,7 @@ const bcrypt = require('bcryptjs');
 const userRepository = require('./user.repository');
 const { generateAccessToken, generateRefreshToken } = require('../../shared/utils/tokenUtils');
 const jwt = require('jsonwebtoken');
+const productRepository = require('../product/product.repository')
 
 const registerUser = async (username, password, role = 'user') => {
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -47,6 +48,10 @@ const updateRecipe = async (recipeId, recipeData, userId) => {
 const deleteRecipe = async (recipeId, userId) => {
     return await userRepository.deleteUserRecipe(recipeId, userId);
 };
+const getFavoriteRecipes = async (userId) => {
+    return await userRepository.getFavoriteRecipes(userId);
+};
+
 
 const addFavoriteRecipe = async (userId, recipeId) => {
     return await userRepository.addFavoriteRecipe(userId, recipeId);
@@ -82,4 +87,5 @@ module.exports = {
     createProduct,
     updateProduct,
     deleteProduct,
+    getFavoriteRecipes
 };

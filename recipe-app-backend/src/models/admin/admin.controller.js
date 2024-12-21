@@ -1,4 +1,5 @@
 const adminService = require('./admin.service');
+const repository = require("./admin.repository");
 
 // Контроллеры для рецептов
 const createRecipe = async (req, res) => {
@@ -92,6 +93,150 @@ const deleteProduct = async (req, res) => {
         res.status(500).json({ message: 'Internal server error' });
     }
 };
+const getProducts = async (req, res) => {
+    try {
+        const products = await repository.getProducts(); // Получаем ID пользователя из токена
+        res.status(200).json(products);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error retrieving products' });
+    }
+};
+
+const getProductById = async (req, res) => {
+    try {
+        const product = await repository.getProductById(req.params.id); // Получаем ID продукта из параметров
+        if (!product) {
+            return res.status(404).json({ message: 'Product not found' });
+        }
+        res.status(200).json(product);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error retrieving product' });
+    }
+};
+
+// Методы для работы с категориями
+const getCategories = async (req, res) => {
+    try {
+        const categories = await repository.getCategories(); // Получаем все категории
+        res.status(200).json(categories);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error retrieving categories' });
+    }
+};
+
+const getCategoryById = async (req, res) => {
+    try {
+        const category = await repository.getCategoryById(req.params.id); // Получаем категорию по ID
+        if (!category) {
+            return res.status(404).json({ message: 'Category not found' });
+        }
+        res.status(200).json(category);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error retrieving category' });
+    }
+};
+
+const createCategory = async (req, res) => {
+    const { name } = req.body; // Получаем имя категории из тела запроса
+    try {
+        const newCategory = await repository.createCategory(name); // Создаем категорию
+        res.status(201).json(newCategory);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error creating category' });
+    }
+};
+
+const updateCategory = async (req, res) => {
+    const { name } = req.body; // Получаем новое имя категории из тела запроса
+    try {
+        const updatedCategory = await repository.updateCategory(req.params.id, name); // Обновляем категорию по ID
+        if (!updatedCategory) {
+            return res.status(404).json({ message: 'Category not found' });
+        }
+        res.status(200).json(updatedCategory);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error updating category' });
+    }
+};
+
+const deleteCategory = async (req, res) => {
+    try {
+        const deletedCategory = await repository.deleteCategory(req.params.id); // Удаляем категорию по ID
+        if (!deletedCategory) {
+            return res.status(404).json({ message: 'Category not found' });
+        }
+        res.status(200).json(deletedCategory);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error deleting category' });
+    }
+};
+const getTags = async (req, res) => {
+    try {
+        const tags = await repository.getTags(); // Получаем все теги
+        res.status(200).json(tags);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error retrieving tags' });
+    }
+};
+
+const getTagById = async (req, res) => {
+    try {
+        const tag = await repository.getTagById(req.params.id); // Получаем тег по ID
+        if (!tag) {
+            return res.status(404).json({ message: 'Tag not found' });
+        }
+        res.status(200).json(tag);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error retrieving tag' });
+    }
+};
+
+const createTag = async (req, res) => {
+    const { name } = req.body; // Получаем имя тега из тела запроса
+    try {
+        const newTag = await repository.createTag(name); // Создаем тег
+        res.status(201).json(newTag);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error creating tag' });
+    }
+};
+
+const updateTag = async (req, res) => {
+    const { name } = req.body; // Получаем новое имя тега из тела запроса
+    try {
+        const updatedTag = await repository.updateTag(req.params.id, name); // Обновляем тег по ID
+        if (!updatedTag) {
+            return res.status(404).json({ message: 'Tag not found' });
+        }
+        res.status(200).json(updatedTag);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error updating tag' });
+    }
+};
+
+const deleteTag = async (req, res) => {
+    try {
+        const deletedTag = await repository.deleteTag(req.params.id); // Удаляем тег по ID
+        if (!deletedTag) {
+            return res.status(404).json({ message: 'Tag not found' });
+        }
+        res.status(200).json(deletedTag);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error deleting tag' });
+    }
+};
 
 module.exports = {
     createRecipe,
@@ -103,4 +248,17 @@ module.exports = {
     createProduct,
     updateProduct,
     deleteProduct,
+    getProductById,
+    getProducts,
+    getCategories,
+    getCategoryById,
+    createCategory,
+    updateCategory,
+    deleteCategory,
+    getTags,
+    getTagById,
+    createTag,
+    updateTag,
+    deleteTag
 };
+

@@ -1,57 +1,117 @@
-// src/App.js
 import React, { useState, useEffect } from 'react';
-import Cookies from 'js-cookie'; // Импортируем библиотеку для работы с cookies
+import { Route, Routes, useNavigate } from 'react-router-dom';
+import Cookies from 'js-cookie';
 import LoginForm from './components/LoginForm';
 import RegisterForm from './components/RegisterForm';
-import SearchPage from './components/SearchPage'; // Импортируем страницу поиска
-import Header from './components/Header'; // Импортируем Header
-//import './App.css'; // Подключаем стили
+import HomePage from './components/HomePage';
+import SearchPage from './components/user/SearchPage';
+import RecipePage from './components/user/RecipePage';
+import Header from './components/user/Header'; // Обычный хедер
+import AdminHeader from './components/admin/AdminHeader'; // Хедер для админа
+import FavoritesPage from './components/user/FavoritesPage';
+import CreateRecipePage from './components/user/CreateRecipePage';
+import MyRecipesPage from './components/user/MyRecipesPage';
+import UpdateRecipePage from './components/user/UpdateRecipePage';
+import SearchByTagsPage from './components/user/SearchByTagsPage';
+import UserProductPage from './components/user/UserProductPage';
+import {jwtDecode} from 'jwt-decode';
+import AdminPage from "./components/admin/AdminPage";
+import AdminCreateRecipePage from "./components/admin/AdminCreateRecipePage";
+import AdminUpdateRecipePage from "./components/admin/AdminUpdateRecipePage";
+import AdminRecipePage from "./components/admin/AdminRecipesPage";
+import AdminRecipesPage from "./components/admin/AdminRecipesPage";
+import AdminProductPage from "./components/admin/AdminProducts";
+import AdminTagPage from "./components/admin/AdminTagPage";
+import AdminCategoryPage from "./components/admin/AdminCategoryPage"; // Страница администратора
 
 function App() {
-    const [isRegistering, setIsRegistering] = useState(false);
-    const [isLoggedIn, setIsLoggedIn] = useState(false); // Состояние для отслеживания входа
-    const [token, setToken] = useState(''); // Токен пользователя
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [token, setToken] = useState('');
+    const [role, setRole] = useState('');
+    const navigate = useNavigate();
 
-    // Функция для обработки успешного входа
     const handleLoginSuccess = (token) => {
-        Cookies.set('token', token, { expires: 7, secure: true, sameSite: 'Strict' }); // Сохраняем токен в cookies
+        Cookies.set('token', token, { expires: 7, secure: true, sameSite: 'Strict' });
         setToken(token);
-        setIsLoggedIn(true); // Устанавливаем флаг входа в систему
+        setIsLoggedIn(true);
+
+        try {
+            const decodedToken = jwtDecode(token); // Декодируем токен
+            const userRole = decodedToken.role; // Роль из токена
+            setRole(userRole);
+            if (userRole === 'admin') {
+                navigate('/admin'); // Перенаправляем на страницу админа
+            } else {
+                navigate('/search'); // Перенаправляем на страницу для пользователей
+            }
+        } catch (error) {
+            console.error('Invalid token', error);
+        }
     };
 
-    // Функция для выхода из системы
     const handleLogout = () => {
-        Cookies.remove('token'); // Удаляем токен из cookies
+        Cookies.remove('token');
         setToken('');
-        setIsLoggedIn(false); // Сбрасываем состояние
+        setRole('');
+        setIsLoggedIn(false);
+        navigate('/'); // Возврат на главную страницу
     };
 
-    // Эффект для восстановления состояния после перезагрузки
+    const handleNavigate = (page) => {
+        navigate(`/${page}`);
+    };
+
     useEffect(() => {
         const savedToken = Cookies.get('token');
         if (savedToken) {
             setToken(savedToken);
-            setIsLoggedIn(true); // Восстанавливаем статус входа
+            setIsLoggedIn(true);
+
+            // Декодируем и извлекаем роль
+            try {
+                const decodedToken = jwtDecode(savedToken);
+                setRole(decodedToken.role);
+            } catch (error) {
+                console.error('Invalid token', error);
+            }
         }
     }, []);
 
     return (
         <div className="App">
-            {isLoggedIn && <Header onLogout={handleLogout} />} {/* Показать Header только если пользователь вошел в систему */}
+            {isLoggedIn && (role === 'admin' ? (
+                <AdminHeader onLogout={handleLogout} onNavigate={handleNavigate} /> // Используем AdminHeader для админа
+            ) : (
+                <Header onLogout={handleLogout} onNavigate={handleNavigate} token={token} /> // Обычный Header
+            ))}
             <div className="form-container">
-                {isLoggedIn ? (
-                    <SearchPage token={token} /> // Переход на страницу поиска после входа
-                ) : (
-                    <>
-                        {isRegistering ? <RegisterForm /> : <LoginForm onLoginSuccess={handleLoginSuccess} />}
-                        <button
-                            className="toggle-btn"
-                            onClick={() => setIsRegistering(!isRegistering)}
-                        >
-                            {isRegistering ? 'Already have an account? Log in' : 'Don’t have an account? Register'}
-                        </button>
-                    </>
-                )}
+                <Routes>
+                    {isLoggedIn ? (
+                        <>
+                            <Route path="/search" element={<SearchPage token={token} onNavigate={handleNavigate} />} />
+                            <Route path="/tags" element={<SearchByTagsPage token={token} onNavigate={handleNavigate} />} />
+                            <Route path="/create-recipe" element={<CreateRecipePage token={token} onNavigate={handleNavigate} />} />
+                            <Route path="/update-recipe/:recipeId" element={<UpdateRecipePage token={token} onNavigate={handleNavigate} />} />
+                            <Route path="/my-recipes" element={<MyRecipesPage token={token} onNavigate={handleNavigate} />} />
+                            <Route path="/recipe/:id" element={<RecipePage token={token} onNavigate={handleNavigate} />} />
+                            <Route path="/favorites" element={<FavoritesPage token={token} onNavigate={handleNavigate} />} />
+                            <Route path="/my-products" element={<UserProductPage token={token} onNavigate={handleNavigate} />} />
+                            <Route path="/admin" element={<AdminPage token={token} onNavigate={handleNavigate}/>} /> {/* Страница админа */}
+                            <Route path="/admin/update-recipe/:recipeId" element={<AdminUpdateRecipePage token={token} onNavigate={handleNavigate}/>} /> {/* Страница админа */}
+                            <Route path="/admin/create-recipe" element={<AdminCreateRecipePage token={token} onNavigate={handleNavigate}/>} /> {/* Страница админа */}
+                            <Route path="/admin/recipes" element={<AdminRecipesPage token={token} onNavigate={handleNavigate}/> } /> {/* Страница админа */}
+                            <Route path="/admin/products" element={<AdminProductPage token={token} onNavigate={handleNavigate}/> } /> {/* Страница админа */}
+                            <Route path="/admin/tags" element={<AdminTagPage token={token} onNavigate={handleNavigate}/> } /> {/* Страница админа */}
+                            <Route path="/admin/categorys" element={<AdminCategoryPage token={token} onNavigate={handleNavigate}/> } /> {/* Страница админа */}
+                        </>
+                    ) : (
+                        <>
+                            <Route path="/" element={<HomePage onNavigate={handleNavigate} />} />
+                            <Route path="/login" element={<LoginForm onLoginSuccess={handleLoginSuccess} onNavigate={handleNavigate} />} />
+                            <Route path="/register" element={<RegisterForm onNavigate={handleNavigate} />} />
+                        </>
+                    )}
+                </Routes>
             </div>
         </div>
     );

@@ -17,12 +17,12 @@ const deleteRecipe = async (id) => {
 // Логика для пользователей
 const createUser = async (userData) => {
     const hashedPassword = await bcrypt.hash(userData.password, 10);
-    await adminRepository.createUser({ ...userData, password: hashedPassword });
+    await adminRepository.createUser(userData.username, userData.password= hashedPassword,  userData.role);
 };
 
 const updateUser = async (id, userData) => {
     const hashedPassword = await bcrypt.hash(userData.password, 10);
-    await adminRepository.updateUser(id, { ...userData, password: hashedPassword });
+    await adminRepository.updateUser(id,userData.username, userData.password= hashedPassword,  userData.role);
 };
 
 const deleteUser = async (id) => {
