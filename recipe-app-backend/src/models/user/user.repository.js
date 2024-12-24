@@ -259,7 +259,7 @@ const createUserProduct = async (productData, userId) => {
     const { name, category_id, description } = productData;
     const result = await db.query(
         `INSERT INTO products (name, category_id, description, is_global, created_by) 
-         VALUES ($1, $2, $3, $4, FALSE, $5) RETURNING product_id;`,
+         VALUES ($1, $2, $3, FALSE, $4) RETURNING product_id;`,
         [name, category_id, description, userId]
     );
     return result.rows[0].product_id;

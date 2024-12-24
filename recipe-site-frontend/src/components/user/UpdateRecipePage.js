@@ -3,7 +3,7 @@ import { uploadImage, fetchRecipeById, updateRecipe } from '../../api';
 import SelectWithSearch from './SelectWithSearch';
 import TagSelectWithSearch from './TagSelectWithSearch';
 import { fetchProducts, fetchTags } from '../../api';
-import { useParams } from 'react-router-dom';
+import {useNavigate, useParams} from 'react-router-dom';
 
 //разобраться с отображением тегов
 const UpdateRecipePage = ({ token }) => {
@@ -18,18 +18,24 @@ const UpdateRecipePage = ({ token }) => {
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
     const [currentImageUrl, setCurrentImageUrl] = useState(null); // URL текущего изображения
+    const [options, setOptions] = useState(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchRecipe = async () => {
             try {
                 const data = await fetchRecipeById(recipeId, token);
-                console.log(data);
+                console.log('Fetched Recipe Data:', data);
 
                 setName(data.name);
                 setDescription(data.description);
                 setCookingTime(data.cooking_time);
                 setProducts(data.products || []);
-                setTags(data.tags || []);
+                console.log('Products:', products);
+
+                // Если теги приходят в формате [{ tag_id: 1, name: 'Tag1' }, { tag_id: 2, name: 'Tag2' }]
+                setTags((data.tags || []).map(tag => ({ value: tag.tag_id, label: tag.name })));
+                console.log('Tags:', tags);
 
                 // Связь шагов с изображениями
                 const stepsWithImages = (data.steps || []).map((step, index) => {
@@ -47,12 +53,15 @@ const UpdateRecipePage = ({ token }) => {
 
                 setCurrentImageUrl(data.image.image_url || null);
             } catch (err) {
-                setError('Failed to fetch recipe details');
+                console.error('Error fetching recipe:', err); // Логируем ошибку в консоль
+                const errorMessage = `Failed to fetch recipe details: ${err.message || 'Unknown error'}`;
+                setError(errorMessage); // Устанавливаем подробное сообщение об ошибке
             }
         };
 
         fetchRecipe();
     }, [recipeId, token]);
+
 
 
     const handleImageChange = (e) => {
@@ -106,30 +115,50 @@ const UpdateRecipePage = ({ token }) => {
         try {
             let imageUrl = currentImageUrl; // Начальное значение - текущее изображение
             if (imageFile) {
-                imageUrl = await uploadImage(imageFile, 'recipeImage', token, recipeId);
-                console.log(imageUrl);
+                try {
+                    imageUrl = await uploadImage(imageFile, 'recipeImage', token, recipeId);
+                    console.log('Uploaded main image URL:', imageUrl);
+                } catch (imageUploadError) {
+                    throw new Error(`Failed to upload main image: ${imageUploadError.message}`);
+                }
             }
 
             // Загружаем изображения для каждого шага, если они есть
-            const stepImages = await Promise.all(
-                steps.map(async (step, index) => {
-                    if (step.imageFile) {
-                        const uploadedImageUrl = await uploadImage(
-                            step.imageFile,
-                            'stepsImage',
-                            token,
-                            recipeId,
-                            index + 1
-                        );
-                        return { step_number: index + 1, image_url: uploadedImageUrl };
-                    }
-                    return null;
-                })
-            );
+            let stepImages = [];
+            try {
+                stepImages = await Promise.all(
+                    steps.map(async (step, index) => {
+                        if (step.imageFile) {
+                            try {
+                                const uploadedImageUrl = await uploadImage(
+                                    step.imageFile,
+                                    'stepsImage',
+                                    token,
+                                    recipeId,
+                                    index + 1
+                                );
+                                console.log(`Uploaded step ${index + 1} image URL:`, uploadedImageUrl);
+                                return { step_number: index + 1, image_url: uploadedImageUrl };
+                            } catch (stepImageUploadError) {
+                                console.error(`Failed to upload image for step ${index + 1}:`, stepImageUploadError);
+                                throw stepImageUploadError;
+                            }
+                        }
+                        // Если файл изображения не изменился, возвращаем старую ссылку на изображение
+                        if (step.imageUrl) {
+                            return { step_number: index + 1, image_url: step.imageUrl };
+                        }
+                        return null;
+                    })
+                );
+            } catch (allStepImagesError) {
+                throw new Error(`Failed to upload step images: ${allStepImagesError.message}`);
+            }
 
+            console.log(stepImages);
             // Отфильтровываем шаги без изображений
             const filteredStepImages = stepImages.filter(Boolean);
-
+            console.log(filteredStepImages);
             const recipeData = {
                 name,
                 description,
@@ -139,7 +168,7 @@ const UpdateRecipePage = ({ token }) => {
                     quantity: p.quantity,
                     product_name: p.name,
                 })),
-                tags: tags.map(Number),
+                tags: tags.map((t) => t.value),
                 image_url: imageUrl,
                 steps: steps.map((step) => step.description), // Только строки для шагов
                 step_images: filteredStepImages, // Передаем изображения шагов на сервер
@@ -148,10 +177,20 @@ const UpdateRecipePage = ({ token }) => {
             await updateRecipe(recipeId, recipeData, token);
 
             setSuccess('Recipe updated successfully!');
+            navigate(`/recipe/${recipeId}`);
         } catch (err) {
-            setError('Failed to update recipe. Please try again.');
+            console.error('Error updating recipe:', err); // Логируем полную ошибку
+            const errorMessage = `Failed to update recipe. ${err.message || 'An unknown error occurred.'}`;
+            setError(errorMessage); // Показываем подробное сообщение об ошибке
         }
     };
+
+    const handleTagChange = (selectedOptions) => {
+        // Если selectedOptions - это массив, как в случае с multi-select
+        const updatedTags = selectedOptions || [];
+        setTags(updatedTags);
+    };
+
 
     return (
         <div className="update-recipe-container">
@@ -183,12 +222,15 @@ const UpdateRecipePage = ({ token }) => {
                         <div key={index} className="product-item">
                             <SelectWithSearch
                                 placeholder="Search for a product"
-                                loadOptions={(input) => fetchProducts(input)}
+                                loadOptions={(input) => fetchProducts(input, token)}
                                 onChange={(selectedOption) => handleSelectProduct(selectedOption, index)}
-                                value={{ value: product.product_id, label: product.name }} // Устанавливаем выбранное значение
+                                value={{
+                                    value: product.product_id,
+                                    label: product.name
+                                }} // Устанавливаем выбранное значение
                             />
                             <input
-                                type="number"
+                                type="text"
                                 placeholder="Quantity"
                                 value={product.quantity}
                                 onChange={(e) => handleProductChange(index, 'quantity', e.target.value)}
@@ -212,8 +254,9 @@ const UpdateRecipePage = ({ token }) => {
                     <h3>Tags</h3>
                     <TagSelectWithSearch
                         placeholder="Search and select tags"
-                        loadOptions={(input) => fetchTags(input)}
-                        onChange={(selectedTags) => setTags(selectedTags)}
+                        loadOptions={(input) => fetchTags(input, token)} // Передаем правильную функцию загрузки
+                        onChange={(selectedTags) => handleTagChange(selectedTags)} // Обновляем состояние выбранных тегов
+                        value={tags} // Передаем уже отформатированные теги в виде [{ value, label }]
                     />
                 </div>
 
@@ -282,6 +325,22 @@ const UpdateRecipePage = ({ token }) => {
                                     handleStepChange(index, 'imageFile', e.target.files[0])
                                 }
                             />
+                            <button
+                                type="button"
+                                onClick={() =>
+                                    setSteps(steps.filter((_, stepIndex) => stepIndex !== index))
+                                }
+                                style={{
+                                    marginTop: '10px',
+                                    backgroundColor: 'red',
+                                    color: 'white',
+                                    border: 'none',
+                                    padding: '5px',
+                                    cursor: 'pointer',
+                                }}
+                            >
+                                Remove Step
+                            </button>
                         </div>
                     ))}
                     <button type="button" onClick={handleAddStep}>

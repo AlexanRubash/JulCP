@@ -343,3 +343,144 @@ export const deleteAdminTag = async (tagId, token) => {
         throw error;
     }
 };
+
+// --- Пользователи ---
+
+// Получение всех пользователей
+export const fetchAllUsers = async (token) => {
+    try {
+        const response = await fetch(`${API_URL}/admin/users`, {
+            method: 'GET',
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to fetch users');
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error('Error fetching users:', error);
+        throw error;
+    }
+};
+
+// Получение пользователя по ID
+export const fetchUserById = async (userId, token) => {
+    try {
+        const response = await fetch(`${API_URL}/admin/users/${userId}`, {
+            method: 'GET',
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to fetch user by ID');
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error('Error fetching user by ID:', error);
+        throw error;
+    }
+};
+
+// Получение рецептов и продуктов пользователя
+export const fetchUserRecipesAndProducts = async (userId, token) => {
+    try {
+        const response = await fetch(`${API_URL}/admin/users/recipes`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ id: userId }),
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to fetch user recipes and products');
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error('Error fetching user recipes and products:', error);
+        throw error;
+    }
+};
+
+// Создание пользователя
+export const createUser = async (userData, token) => {
+    try {
+        const response = await fetch(`${API_URL}/admin/users`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(userData),
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to create user');
+        }
+
+        // Если сервер отправляет строку, не пытаемся парсить ее как JSON
+        const textResponse = await response.text(); // получаем текстовый ответ
+        return textResponse; // Возвращаем строку, если сервер прислал текст
+    } catch (error) {
+        console.error('Error creating user:', error);
+        throw error;
+    }
+};
+
+
+// Обновление пользователя
+export const updateUser = async (userId, updatedData, token) => {
+    try {
+        const response = await fetch(`${API_URL}/admin/users/${userId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(updatedData),
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to update user');
+        }
+
+        // Если ответ от сервера текстовый, используем .text() для получения строки
+        const textResponse = await response.text(); // Получаем ответ как текст
+        return textResponse; // Возвращаем текстовую строку
+    } catch (error) {
+        console.error('Error updating user:', error);
+        throw error;
+    }
+};
+
+// Удаление пользователя
+export const deleteUser = async (userId, token) => {
+    try {
+        const response = await fetch(`${API_URL}/admin/users/${userId}`, {
+            method: 'DELETE',
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to delete user');
+        }
+
+        // Если ответ от сервера текстовый, используем .text() для получения строки
+        const textResponse = await response.text(); // Получаем ответ как текст
+        return textResponse; // Возвращаем текстовую строку
+    } catch (error) {
+        console.error('Error deleting user:', error);
+        throw error;
+    }
+};

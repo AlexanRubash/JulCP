@@ -1,6 +1,6 @@
 const express = require('express');
 const tagController = require('./tag.controller');
-const {authenticateToken, authorizeRole} = require("../../middleware/authMiddleware");
+const { authenticateToken, authorizeRole } = require('../../shared/middlewares/authMiddleware');
 const productController = require("../product/product.controller");
 
 const router = express.Router();

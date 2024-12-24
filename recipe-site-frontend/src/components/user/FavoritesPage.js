@@ -38,7 +38,6 @@ const FavoritesPage = ({ token, onNavigate }) => {
                 {favorites.length > 0 ? (
                     favorites.map((recipe) => (
                         <div key={recipe.recipe_id} className="recipe-item">
-                            <h4>{recipe.name}</h4>
 
                             {/* Картинка рецепта */}
                             <div className="recipe-image">
@@ -48,9 +47,10 @@ const FavoritesPage = ({ token, onNavigate }) => {
                                     className="recipe-thumbnail"
                                 />
                             </div>
-
+                            <h4>{recipe.name}</h4>
+                            <div className="recipe-wrapper"></div>
                             <p>{recipe.description}</p>
-                            <p>Cooking time: {recipe.cooking_time} minutes</p>
+                            <p>Cooking time: <span>{recipe.cooking_time} minutes</span></p>
 
                             {/* Заменяем Link на кнопку */}
                             <button

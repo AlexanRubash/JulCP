@@ -1,6 +1,6 @@
 const express = require('express');
 const userController = require('./user.controller');
-const {authenticateToken, authorizeRole} = require("../../middleware/authMiddleware");
+const { authenticateToken, authorizeRole } = require('../../shared/middlewares/authMiddleware');
 const router = express.Router();
 
 // Маршруты для регистрации, авторизации и обновления токенов

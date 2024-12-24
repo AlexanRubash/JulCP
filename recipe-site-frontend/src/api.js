@@ -167,6 +167,7 @@ export const createRecipe = async (recipeData, token) => {
 };
 
 export const fetchProducts = async (searchTerm = '', token) => {
+    console.log('token', token);
     const response = await fetch(`${API_URL}/products/search?q=${encodeURIComponent(searchTerm)}`, {
             headers: {'Authorization': `Bearer ${token}`}
     });
@@ -199,7 +200,6 @@ export const fetchTags = async (searchTerm = '', token) => {
         console.error("Unexpected data format:", data);
         return [];
     }
-
     return data; // Ожидается массив объектов { id, name }
 };
 
@@ -371,6 +371,7 @@ export const deleteUserProduct = async (productId, token) => {
         const response = await fetch(`${API_URL}/users/products/${productId}`, {
             method: 'DELETE',
             headers: {
+                'Content-Type': 'application/json',
                 Authorization: `Bearer ${token}`,
             },
         });
@@ -421,6 +422,23 @@ export const createUserProduct = async (productData, token) => {
         return await response.json();
     } catch (error) {
         console.error('Error creating product:', error);
+        throw error;
+    }
+};
+export const deleteUserRecipe = async (recipeId, token) => {
+    try {
+        const response = await fetch(`${API_URL}/users/recipes/${recipeId}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        if (!response.ok) {
+            throw new Error('Failed to delete recipe');
+        }
+    } catch (error) {
+        console.error('Error deleting recipe:', error);
         throw error;
     }
 };

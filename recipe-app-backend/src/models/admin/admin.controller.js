@@ -94,6 +94,7 @@ const deleteProduct = async (req, res) => {
     }
 };
 const getProducts = async (req, res) => {
+
     try {
         const products = await repository.getProducts(); // Получаем ID пользователя из токена
         res.status(200).json(products);
@@ -237,7 +238,44 @@ const deleteTag = async (req, res) => {
         res.status(500).json({ message: 'Error deleting tag' });
     }
 };
-
+const getAllUsers = async (req, res) => {
+    try {
+        const users = await repository.getAllUsers();
+        if (!users) {
+            return res.status(404).json({ message: 'Users not found' });
+        }
+        res.status(200).json(users);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error deleting tag' });
+    }
+}
+const getUserById = async (req, res) => {
+    const id = req.params.id;
+    try {
+        const users = await repository.getUserById(id);
+        if (!users) {
+            return res.status(404).json({ message: 'Users not found' });
+        }
+        res.status(200).json(users);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error deleting tag' });
+    }
+}
+const getUserRecipesAndProducts = async (req, res) => {
+    const {id} = req.body;
+    try {
+        const users = await repository.getUserRecipesAndProducts(id);
+        if (!users) {
+            return res.status(404).json({ message: 'Users not found' });
+        }
+        res.status(200).json(users);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error deleting tag' });
+    }
+}
 module.exports = {
     createRecipe,
     updateRecipe,
@@ -259,6 +297,9 @@ module.exports = {
     getTagById,
     createTag,
     updateTag,
-    deleteTag
+    deleteTag,
+    getAllUsers,
+    getUserRecipesAndProducts,
+    getUserById
 };
 

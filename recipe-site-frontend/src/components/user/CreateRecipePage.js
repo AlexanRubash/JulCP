@@ -4,8 +4,10 @@ import SelectWithSearch from './SelectWithSearch';
 import TagSelectWithSearch from './TagSelectWithSearch'; // Новый компонент
 import { fetchProducts, fetchTags } from '../../api';
 import '../css/CreateRecipePage.css'
+import {useNavigate} from "react-router-dom";
 
 const CreateRecipePage = ({ token }) => {
+    const navigate = useNavigate();
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
     const [cookingTime, setCookingTime] = useState('');
@@ -14,10 +16,17 @@ const CreateRecipePage = ({ token }) => {
     const [imageFile, setImageFile] = useState(null);
     const [steps, setSteps] = useState([{ description: '', imageFile: null }]);
     const [error, setError] = useState('');
+    const [currentImageUrl, setCurrentImageUrl] = useState(null); // URL текущего изображения
     const [success, setSuccess] = useState('');
 
-    const handleImageChange = (e) => setImageFile(e.target.files[0]);
-
+    const handleImageChange = (e) => {
+        const file = e.target.files[0];
+        setImageFile(file);
+        if (file) {
+            const previewUrl = URL.createObjectURL(file);
+            setCurrentImageUrl(previewUrl); // Показываем превью нового изображения
+        }
+    };
     const handleAddStep = () => {
         setSteps([...steps, { description: '', imageFile: null }]);
     };
@@ -81,7 +90,7 @@ const CreateRecipePage = ({ token }) => {
                     quantity: p.quantity,
                     product_name: p.name,
                 })),
-                tags: tags.map(Number),
+                tags: tags.map((t) => t.value),
                 image_url: imageUrl,
                 steps: steps.map((step, index) => ({
                     description: step.description,
@@ -91,7 +100,7 @@ const CreateRecipePage = ({ token }) => {
 
             const newRecipe = await createRecipe(recipeData, token);
 
-            if (newRecipe.id) {
+            if (newRecipe.recipeId) {
                 await uploadImage(imageFile, 'recipeImage', token, newRecipe.id);
                 await Promise.all(
                     steps.map(async (step, index) => {
@@ -106,9 +115,11 @@ const CreateRecipePage = ({ token }) => {
                         }
                     })
                 );
+
             }
 
             setSuccess('Recipe created successfully!');
+            navigate(`/recipe/${newRecipe.recipeId}`);
         } catch (err) {
             setError('Failed to create recipe. Please try again.');
         }
@@ -148,7 +159,7 @@ const CreateRecipePage = ({ token }) => {
                                 onChange={(selectedOption) => handleSelectProduct(selectedOption, index)}
                             />
                             <input
-                                type="number"
+                                type="text"
                                 placeholder="Quantity"
                                 value={product.quantity}
                                 onChange={(e) => handleProductChange(index, 'quantity', e.target.value)}
@@ -172,31 +183,100 @@ const CreateRecipePage = ({ token }) => {
                     <h3>Tags</h3>
                     <TagSelectWithSearch
                         placeholder="Search and select tags"
-                        loadOptions={(input) => fetchTags(input, token)} // Функция для загрузки тегов
+                        loadOptions={(input) => fetchTags(input, token)}
                         onChange={(selectedTags) => setTags(selectedTags)}
                     />
                 </div>
                 <div>
                     <h3>Steps</h3>
                     {steps.map((step, index) => (
-                        <div key={index}>
-                            <textarea
-                                placeholder="Step Description"
-                                value={step.description}
-                                onChange={(e) => handleStepChange(index, 'description', e.target.value)}
-                                required
-                            />
+                        <div key={index} className="step-container">
+            <textarea
+                placeholder="Step Description"
+                value={step.description}
+                onChange={(e) => handleStepChange(index, 'description', e.target.value)}
+                required
+            />
+                            {step.imageUrl || step.imageFile ? (
+                                <div
+                                    className="image-preview-container"
+                                    style={{position: 'relative', marginTop: '10px'}}
+                                >
+                                    <img
+                                        src={
+                                            step.imageFile
+                                                ? URL.createObjectURL(step.imageFile)
+                                                : step.imageUrl
+                                        }
+                                        alt={`Step ${index + 1}`}
+                                        style={{
+                                            width: '300px',
+                                            height: 'auto',
+                                            objectFit: 'cover',
+                                        }}
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() =>
+                                            document.getElementById(`step-file-input-${index}`).click()
+                                        }
+                                        style={{
+                                            position: 'absolute',
+                                            top: '10px',
+                                            right: '10px',
+                                            backgroundColor: 'rgba(0,0,0,0.5)',
+                                            color: 'white',
+                                            border: 'none',
+                                            padding: '5px',
+                                            cursor: 'pointer',
+                                        }}
+                                    >
+                                        Change
+                                    </button>
+                                </div>
+                            ) : (
+                                <input
+                                    id={`step-file-input-${index}`}
+                                    type="file"
+                                    onChange={(e) =>
+                                        handleStepChange(index, 'imageFile', e.target.files[0])
+                                    }
+                                    style={{display: 'block', marginTop: '10px'}}
+                                />
+                            )}
                             <input
+                                id={`step-file-input-${index}`}
                                 type="file"
-                                onChange={(e) => handleStepChange(index, 'imageFile', e.target.files[0])}
+                                style={{display: 'none'}}
+                                onChange={(e) =>
+                                    handleStepChange(index, 'imageFile', e.target.files[0])
+                                }
                             />
+                            <button
+                                type="button"
+                                onClick={() =>
+                                    setSteps(steps.filter((_, stepIndex) => stepIndex !== index))
+                                }
+                                style={{
+                                    marginTop: '10px',
+                                    backgroundColor: 'red',
+                                    color: 'white',
+                                    border: 'none',
+                                    padding: '5px',
+                                    cursor: 'pointer',
+                                }}
+                            >
+                                Remove Step
+                            </button>
                         </div>
                     ))}
-                    <button type="button" onClick={handleAddStep}>Add Step</button>
+                    <button type="button" onClick={handleAddStep}>
+                        Add Step
+                    </button>
                 </div>
                 <div>
                     <h3>Recipe Image</h3>
-                    <input type="file" onChange={handleImageChange} />
+                    <input type="file" onChange={handleImageChange}/>
                 </div>
                 <button type="submit">Create Recipe</button>
             </form>

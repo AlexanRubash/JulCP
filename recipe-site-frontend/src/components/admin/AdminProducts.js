@@ -1,19 +1,28 @@
-import React, { useState, useEffect } from 'react';
-import { fetchAdminProducts, deleteAdminProduct, updateAdminProduct, createAdminProduct } from '../../api/adminApi';
+import React, { useState, useEffect, useMemo } from 'react';
+import {
+    fetchAdminProducts,
+    deleteAdminProduct,
+    updateAdminProduct,
+    createAdminProduct
+} from '../../api/adminApi';
+import { useNavigate } from 'react-router-dom'; // Импортируем useNavigate
 
 const AdminProductPage = ({ token }) => {
     const [products, setProducts] = useState([]);
-    const [selectedProduct, setSelectedProduct] = useState(null);
+    const [currentPage, setCurrentPage] = useState(1);
     const [searchQuery, setSearchQuery] = useState('');
     const [isEditing, setIsEditing] = useState(false);
     const [isAdding, setIsAdding] = useState(false);
+    const [selectedProduct, setSelectedProduct] = useState(null);
     const [newProduct, setNewProduct] = useState({
         name: '',
         description: '',
-        category_id: '',
+        category_id: ''
     });
 
-    // Загрузка продуктов для администратора
+    const itemsPerPage = 100; // Количество продуктов на странице
+    const navigate = useNavigate(); // Используем useNavigate для навигации
+
     useEffect(() => {
         const loadProducts = async () => {
             try {
@@ -29,11 +38,22 @@ const AdminProductPage = ({ token }) => {
 
     const handleSearch = (e) => {
         setSearchQuery(e.target.value);
+        setCurrentPage(1); // Сбрасываем текущую страницу при новом поиске
     };
 
-    const filteredProducts = products.filter((product) =>
-        product.name.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    const filteredProducts = useMemo(() => {
+        return products.filter((product) =>
+            product.name.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+    }, [products, searchQuery]);
+
+    const paginatedProducts = useMemo(() => {
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        const endIndex = startIndex + itemsPerPage;
+        return filteredProducts.slice(startIndex, endIndex);
+    }, [filteredProducts, currentPage]);
+
+    const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
 
     const handleEdit = (product) => {
         setSelectedProduct(product);
@@ -72,7 +92,7 @@ const AdminProductPage = ({ token }) => {
             const productData = {
                 name: newProduct.name,
                 description: newProduct.description,
-                category_id: newProduct.category_id || null,
+                category_id: newProduct.category_id || null
             };
 
             await createAdminProduct(productData, token);
@@ -80,14 +100,15 @@ const AdminProductPage = ({ token }) => {
             setProducts(updatedProducts);
 
             setIsAdding(false);
-            setNewProduct({
-                name: '',
-                description: '',
-                category_id: '',
-            });
+            setNewProduct({ name: '', description: '', category_id: '' });
         } catch (error) {
             console.error('Error adding product:', error);
         }
+    };
+
+    // Функция для перехода на страницу продукта
+    const handleProductClick = (productId) => {
+        navigate(`/product/${productId}`); // Перенаправляем на страницу продукта
     };
 
     return (
@@ -128,9 +149,15 @@ const AdminProductPage = ({ token }) => {
             )}
 
             <div className="product-list">
-                {filteredProducts.map((product) => (
+                {paginatedProducts.map((product) => (
                     <div key={product.product_id} className="product-item">
-                        <h3>{product.name}</h3>
+                        <h3
+                            onClick={() => handleProductClick(product.product_id)} // Добавлена навигация при клике
+                            style={{ cursor: 'pointer', color: 'blue', textDecoration: 'underline' }} // Стили для визуального обозначения кликабельности
+                        >
+                            {product.name}
+                        </h3>
+                        <p>{product.product_id}</p>
                         <p>{product.description}</p>
 
                         <button onClick={() => handleEdit(product)}>Изменить</button>
@@ -160,6 +187,24 @@ const AdminProductPage = ({ token }) => {
                         )}
                     </div>
                 ))}
+            </div>
+
+            <div className="pagination-controls">
+                <button
+                    onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                    disabled={currentPage === 1}
+                >
+                    Назад
+                </button>
+                <span>
+                    Страница {currentPage} из {totalPages}
+                </span>
+                <button
+                    onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                    disabled={currentPage === totalPages}
+                >
+                    Вперед
+                </button>
             </div>
         </div>
     );

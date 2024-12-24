@@ -22,7 +22,8 @@ function LoginForm({ onLoginSuccess }) {
     };
 
     return (
-        <form onSubmit={handleSubmit}>
+        <div className="login-form-container">
+        <form className="login-form" onSubmit={handleSubmit}>
             <input
                 type="text"
                 name="username"
@@ -42,6 +43,7 @@ function LoginForm({ onLoginSuccess }) {
             <button type="submit">Login</button>
             {error && <p className="error">{error}</p>}
         </form>
+        </div>
     );
 }
 

@@ -352,11 +352,15 @@ const AdminRecipesPage = ({ token }) => {
                                             </div>
                                             <p>Теги: {recipe.tags?.map(tag => tag.name).join(', ') || 'Нет тегов'}</p>
                                             <a href={`/recipe/${recipe.recipe_id}`} className="details-button">
-                                                Подробнее
+                                                <div className="button-container">
+                                                    <p>Подробнее</p>
+                                                </div>
                                             </a>
                                             <a href={`/admin/update-recipe/${recipe.recipe_id}`}
                                                className="details-button">
-                                                Изменить
+                                                <div className="button-container">
+                                                    <p>Изменить</p>
+                                                </div>
                                             </a>
                                             <button
                                                 className="delete-button"

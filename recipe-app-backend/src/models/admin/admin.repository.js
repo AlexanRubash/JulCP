@@ -85,11 +85,14 @@ const updateRecipe = async (id, recipeData) => {
         [name, description, cooking_time, id]
     );
 
-    await db.query(`DELETE FROM recipe_images WHERE recipe_id=$1`, [id]);
-    await db.query(
-        `INSERT INTO recipe_images (recipe_id, image_url) VALUES ($1, $2);`,
-        [id, image_url]
-    );
+    if (image_url) {
+        await db.query(`DELETE FROM recipe_images WHERE recipe_id=$1`, [id]);
+        await db.query(
+            `INSERT INTO recipe_images (recipe_id, image_url) 
+             VALUES ($1, $2);`,
+            [id, image_url]
+        );
+    }
 
     await db.query(`DELETE FROM recipe_products WHERE recipe_id = $1`, [id]);
     for (let { product_id, quantity, product_name } of products) {
@@ -141,6 +144,7 @@ const updateRecipe = async (id, recipeData) => {
 const deleteRecipe = async (id) => {
     try {
         await db.query('DELETE FROM recipe_products WHERE recipe_id = $1;', [id]);
+        await db.query('DELETE FROM favorites WHERE recipe_id = $1;', [id]);
         await db.query('DELETE FROM recipe_images WHERE recipe_id = $1;', [id]);
         await db.query('DELETE FROM step_images WHERE recipe_id = $1;', [id]);
         await db.query('DELETE FROM recipe_tags WHERE recipe_id = $1;', [id]);
@@ -218,7 +222,7 @@ const deleteProduct = async (id) => {
     }
 };
 
-const getProducts = async () => {
+const getProducts = async (limit, offset) => {
     const query = `
         SELECT product_id, name, description, category_id, image
         FROM products
@@ -343,6 +347,59 @@ const deleteTag = async (tagId) => {
     const result = await db.query(query, [tagId]);
     return result.rows[0];
 };
+const getAllUsers = async () => {
+    const query = `
+        SELECT user_id, username, role
+        FROM users where role='user';
+    `;
+    const result = await db.query(query);
+    return result.rows;
+};
+const getUserById = async (user_id) => {
+    const query = `
+        SELECT user_id, username, role
+        FROM users where user_id=$1;
+    `;
+    const result = await db.query(query, [user_id]);
+    return result.rows;
+};
+
+
+// Получение рецептов и продуктов для конкретного пользователя
+const getUserRecipesAndProducts = async (userId) => {
+    // Получение рецептов, созданных пользователем
+    const recipesQuery = `
+        SELECT r.recipe_id, r.name AS recipe_name, r.description, r.cooking_time
+        FROM recipes r
+        WHERE r.created_by = $1;
+    `;
+    const recipesResult = await db.query(recipesQuery, [userId]);
+    const recipes = recipesResult.rows;
+
+    // Для каждого рецепта получить продукты
+    for (const recipe of recipes) {
+        const productsQuery = `
+            SELECT p.product_id, p.name AS product_name, rp.quantity
+            FROM recipe_products rp
+            JOIN products p ON rp.product_id = p.product_id
+            WHERE rp.recipe_id = $1;
+        `;
+        const productsResult = await db.query(productsQuery, [recipe.recipe_id]);
+        recipe.products = productsResult.rows;
+    }
+
+    // Получение продуктов, созданных пользователем
+    const productsQuery = `
+        SELECT p.product_id, p.name AS product_name, p.description
+        FROM products p
+        WHERE p.created_by = $1;
+    `;
+    const productsResult = await db.query(productsQuery, [userId]);
+    const products = productsResult.rows;
+
+    return { recipes, products };
+};
+
 module.exports = {
     createRecipe,
     updateRecipe,
@@ -364,6 +421,9 @@ module.exports = {
     getTagById,
     createTag,
     updateTag,
-    deleteTag
+    deleteTag,
+    getAllUsers,
+    getUserRecipesAndProducts,
+    getUserById
 };
 

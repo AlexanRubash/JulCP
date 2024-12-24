@@ -2,11 +2,10 @@ import React, { useState, useEffect } from 'react';
 import Select from 'react-select';
 import debounce from 'lodash.debounce';
 
-const SelectWithSearch = ({ placeholder, loadOptions, onChange, value }) => {
+const ProductSelectWithSearch = ({ placeholder, loadOptions, onChange, value }) => {
     const [options, setOptions] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [isSearchable, setIsSearchable] = useState(true);
-console.log(value);
     const handleSearch = debounce(async (inputValue = '') => {
         if (typeof inputValue !== 'string') return;
         const trimmedInput = inputValue.trim();
@@ -52,4 +51,4 @@ console.log(value);
     );
 };
 
-export default SelectWithSearch;
+export default ProductSelectWithSearch;

@@ -21,7 +21,16 @@ body {
     gap: 20px;
     margin: 0;
 }
-
+.login-form-container{
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.login-form{
+    width: 50vw;
+}
 /* Формы */
 form {
     display: flex;
@@ -62,7 +71,28 @@ button {
     box-sizing: border-box;
     font-family: 'Poppins', sans-serif;
 }
-
+.user-product-page{
+    margin-top: 10px;
+    display:flex;
+    flex-direction: column;
+    gap: 15px;
+}
+.add-product-form{
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+.add-product-form textarea{
+    height: 100px;
+}
+.add-product-form button:last-child{
+    border: solid 3px #28a745;
+    background: none;
+    color:#28a745;
+}
+.add-product-form button:last-child:hover{
+    background: #d9dad9;
+}
 button:hover {
    background-color: #218838;
 }

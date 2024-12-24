@@ -25,7 +25,34 @@
 .recipe-item:hover {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
+.recipe-actions{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
 
+}
+.recipe-actions .update-button{
+  border: solid 3px #28a745;
+    background: none;
+    color:#28a745;
+}
+
+
+.recipe-actions .update-button:hover {
+background: #d9dad9;
+}
+.recipe-actions .delete-button{
+    border: solid 3px #cc2828;
+    background: none;
+    color:#cc2828;
+}
+
+
+.recipe-actions .delete-button:hover {
+    background: #cc2828;
+    color:#f9f9f9;
+}
 .recipe-item h4 {
     font-size: 20px;
     color: #333;
@@ -37,6 +64,7 @@
     font-size: 14px;
     margin: 5px 0;
 }
+
 
 .recipe-image {
     text-align: center;

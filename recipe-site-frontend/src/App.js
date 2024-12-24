@@ -22,7 +22,11 @@ import AdminRecipePage from "./components/admin/AdminRecipesPage";
 import AdminRecipesPage from "./components/admin/AdminRecipesPage";
 import AdminProductPage from "./components/admin/AdminProducts";
 import AdminTagPage from "./components/admin/AdminTagPage";
-import AdminCategoryPage from "./components/admin/AdminCategoryPage"; // Страница администратора
+import AdminCategoryPage from "./components/admin/AdminCategoryPage";
+import ProductPage from "./components/user/ProductPage";
+import ProductsPage from "./components/user/ProductsPage";
+import AdminUserPage from "./components/admin/AdminUserPage";
+import AdminUsersPage from "./components/admin/AdminUsersPage"; // Страница администратора
 
 function App() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -96,6 +100,8 @@ function App() {
                             <Route path="/recipe/:id" element={<RecipePage token={token} onNavigate={handleNavigate} />} />
                             <Route path="/favorites" element={<FavoritesPage token={token} onNavigate={handleNavigate} />} />
                             <Route path="/my-products" element={<UserProductPage token={token} onNavigate={handleNavigate} />} />
+                            <Route path="/products" element={<ProductsPage token={token} onNavigate={handleNavigate} />} />
+                            <Route path="/product/:productId" element={<ProductPage token={token} onNavigate={handleNavigate} />} />
                             <Route path="/admin" element={<AdminPage token={token} onNavigate={handleNavigate}/>} /> {/* Страница админа */}
                             <Route path="/admin/update-recipe/:recipeId" element={<AdminUpdateRecipePage token={token} onNavigate={handleNavigate}/>} /> {/* Страница админа */}
                             <Route path="/admin/create-recipe" element={<AdminCreateRecipePage token={token} onNavigate={handleNavigate}/>} /> {/* Страница админа */}
@@ -103,6 +109,8 @@ function App() {
                             <Route path="/admin/products" element={<AdminProductPage token={token} onNavigate={handleNavigate}/> } /> {/* Страница админа */}
                             <Route path="/admin/tags" element={<AdminTagPage token={token} onNavigate={handleNavigate}/> } /> {/* Страница админа */}
                             <Route path="/admin/categorys" element={<AdminCategoryPage token={token} onNavigate={handleNavigate}/> } /> {/* Страница админа */}
+                            <Route path="/admin/users" element={<AdminUsersPage token={token} onNavigate={handleNavigate}/> } /> {/* Страница админа */}
+                            <Route path="/admin/user/:userId" element={<AdminUserPage token={token} onNavigate={handleNavigate}/> } /> {/* Страница админа */}
                         </>
                     ) : (
                         <>

@@ -119,22 +119,41 @@ const getRecipesByExactProducts = async (productIds) => {
 
 // Получение рецептов по частичному совпадению продуктов с улучшенной фильтрацией
 const getRecipesByPartialProducts = async (productIds, limit, offset) => {
-
-    const query = `
+    // Выполняем запрос с пагинацией (LIMIT и OFFSET)
+    const queryWithPagination = `
         SELECT r.recipe_id, r.name, r.cooking_time, r.is_global, r.created_by
         FROM recipes r
         JOIN recipe_products rp ON r.recipe_id = rp.recipe_id
         WHERE rp.product_id = ANY($1::int[])
         GROUP BY r.recipe_id
-        LIMIT $2 OFFSET $3;  -- Ограничиваем выборку с помощью LIMIT и OFFSET
+        LIMIT $2 OFFSET $3;
     `;
-    const result = await db.query(query, [productIds, limit, offset]);
+
+    // Выполняем запрос с пагинацией
+    let result = await db.query(queryWithPagination, [productIds, limit, offset]);
+
+    // Если результат пустой (не найдено ни одного рецепта), выполняем тот же запрос без пагинации
+    if (result.rows.length === 0) {
+        const queryWithoutPagination = `
+            SELECT r.recipe_id, r.name, r.cooking_time, r.is_global, r.created_by
+            FROM recipes r
+            JOIN recipe_products rp ON r.recipe_id = rp.recipe_id
+            WHERE rp.product_id = ANY($1::int[])
+            GROUP BY r.recipe_id;
+        `;
+
+        // Выполняем запрос без пагинации
+        result = await db.query(queryWithoutPagination, [productIds]);
+    }
+
+    // Возвращаем результат, обрабатывая поле is_global
     return result.rows.map(row => ({
         ...row,
         is_global: row.is_global, // Возвращаем флаг глобальности
         created_by: row.is_global ? null : row.created_by // Если не глобальный, возвращаем created_by
     }));
 };
+
 
 
 
@@ -152,8 +171,24 @@ const checkIfFavorite = async (recipeId, userId) => {
     const result = await db.query(query, [recipeId, userId]);
     return result.rows.length > 0; // Если строка найдена, значит рецепт в избранном
 };
+// Получение рецептов по конкретному продукту
+const getRecipesByProduct = async (productId) => {
+    const query = `
+        SELECT r.recipe_id, r.name, r.description, r.cooking_time, r.is_global, r.created_by
+        FROM recipes r
+        JOIN recipe_products rp ON r.recipe_id = rp.recipe_id
+        WHERE rp.product_id = $1;
+    `;
+    const result = await db.query(query, [productId]);
+    return result.rows.map(row => ({
+        ...row,
+        is_global: row.is_global, // Возвращаем флаг глобальности
+        created_by: row.is_global ? null : row.created_by // Если не глобальный, возвращаем created_by
+    }));
+};
 module.exports = {
     getRecipeById,
+    getRecipesByProduct,
     getRecipeProducts,
     getRecipeTags,
     getRecipeImage,

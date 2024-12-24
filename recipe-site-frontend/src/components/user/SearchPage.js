@@ -176,7 +176,6 @@ const SearchPage = ({ token }) => {
                     {exactRecipes.length > 0 ? (
                         exactRecipes.map((recipe) => (
                             <div key={recipe.recipe_id} className="recipe-item">
-                                <h4>{recipe.name}</h4>
                                 <div className="recipe-image">
                                     <img
                                         src={recipe.image?.image_url || 'https://via.placeholder.com/150'}
@@ -184,12 +183,16 @@ const SearchPage = ({ token }) => {
                                         className="recipe-thumbnail"
                                     />
                                 </div>
-
-                                <p>Products: {recipe.products.map((prod) => prod.name).join(', ')}</p>
-                                <p>Cooking time: {recipe.cooking_time || 'N/A'}</p>
+                                <h4>{recipe.name}</h4>
+                                <div className="recipe-wrapper"></div>
+                                <p>Products: <span>{recipe.products.map((prod) => prod.name).join(', ')}</span> </p>
+                                <p>Cooking time: <span>{recipe.cooking_time || 'N/A'}</span></p>
                                 {/* Заменили Link на кнопку */}
+
                                 <a href={`/recipe/${recipe.recipe_id}`} className="details-button">
-                                    Подробнее
+                                    <div className="button-container">
+                                        <p>Подробнее</p>
+                                    </div>
                                 </a>
                             </div>
                         ))
@@ -218,7 +221,9 @@ const SearchPage = ({ token }) => {
                                 <p>Products: {recipe.products.map((prod) => prod.name).join(', ')}</p>
                                 {/* Заменили Link на кнопку */}
                                 <a href={`/recipe/${recipe.recipe_id}`} className="details-button">
-                                    Подробнее
+                                    <div className="button-container">
+                                        <p>Подробнее</p>
+                                    </div>
                                 </a>
                             </div>
                         ))

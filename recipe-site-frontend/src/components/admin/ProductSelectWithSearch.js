@@ -6,7 +6,6 @@ const ProductSelectWithSearch = ({ placeholder, loadOptions, onChange, value }) 
     const [options, setOptions] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [isSearchable, setIsSearchable] = useState(true);
-console.log(value);
     const handleSearch = debounce(async (inputValue = '') => {
         if (typeof inputValue !== 'string') return;
         const trimmedInput = inputValue.trim();

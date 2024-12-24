@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import '../css/RecipeItem.css';
+import {deleteUserProduct, deleteUserRecipe} from "../../api";
 
 const MyRecipesPage = ({ token, onNavigate }) => {
     const [myRecipes, setMyRecipes] = useState([]);
@@ -44,6 +45,18 @@ const MyRecipesPage = ({ token, onNavigate }) => {
         onNavigate(`update-recipe/${recipeId}`);
     };
 
+    const handleDeleteClick = async (recipe) => {
+            try {
+                // Здесь должен быть вызов API для удаления рецепта
+                console.log(`Deleting recipe with ID: ${recipe.recipe_id}`);
+                await deleteUserRecipe(recipe.recipe_id, token);
+                // После успешного удаления обновляем список рецептов
+                setMyRecipes((prevRecipes) => prevRecipes.filter((r) => r.recipe_id !== recipe.recipe_id));
+
+            } catch (err) {
+                console.error('Failed to delete recipe:', err);
+            }
+    };
     return (
         <div className="my-recipes-container">
             <h2>My Recipes</h2>
@@ -51,7 +64,7 @@ const MyRecipesPage = ({ token, onNavigate }) => {
                 {myRecipes.length > 0 ? (
                     myRecipes.map((recipe) => (
                         <div key={recipe.recipe_id} className="recipe-item">
-                            <h4>{recipe.name}</h4>
+
                             <div className="recipe-image">
                                 <img
                                     src={recipe.image_url || 'https://via.placeholder.com/150'}
@@ -59,6 +72,8 @@ const MyRecipesPage = ({ token, onNavigate }) => {
                                     className="recipe-thumbnail"
                                 />
                             </div>
+                            <h4>{recipe.name}</h4>
+                            <div className="recipe-wrapper"></div>
                             <p>{recipe.description}</p>
                             <p>Cooking time: {recipe.cooking_time} minutes</p>
                             <div className="recipe-actions">
@@ -73,6 +88,12 @@ const MyRecipesPage = ({ token, onNavigate }) => {
                                     onClick={() => handleUpdateRecipe(recipe.recipe_id)}
                                 >
                                     Update
+                                </button>
+                                <button
+                                    className="delete-button"
+                                    onClick={() => handleDeleteClick(recipe)}
+                                >
+                                    Delete
                                 </button>
                             </div>
                         </div>

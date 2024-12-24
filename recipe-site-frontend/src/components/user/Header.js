@@ -18,6 +18,7 @@ const Header = ({ onLogout, onNavigate, token }) => {
     };
 
     const handleNavigation = (page) => {
+        console.log(page);
         onNavigate(page);
         if (page !== 'search') { // Очищаем поиск только если не на странице поиска
             setSearchResults([]);
@@ -66,6 +67,9 @@ const Header = ({ onLogout, onNavigate, token }) => {
                 <button className="nav-item" onClick={() => handleNavigation('tags')}>
                     Search by Tags
                 </button>
+                <button className="nav-item" onClick={() => handleNavigation('products')}>
+                    All products
+                </button>
             </nav>
             <div className="search-container">
                 <input
@@ -90,7 +94,7 @@ const Header = ({ onLogout, onNavigate, token }) => {
                                         alt={recipe.name}
                                     />
                                 ) : null}
-                                <span className="search-result-name">{recipe.name}</span>
+                                <span className="search-result-name" >{recipe.name}</span>
                             </li>
                         ))}
                     </ul>

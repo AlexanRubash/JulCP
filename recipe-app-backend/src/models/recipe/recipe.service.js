@@ -62,7 +62,6 @@ const fetchRecipesByPartialProducts = async (productIds, limit, offset) => {
         })
     );
 };
-// 2. Получение рецепта по имени
 // 2. Получение рецептов по имени
 const fetchRecipeByName = async (name) => {
     const recipes = await recipeRepository.getRecipeByName(name); // Получаем все рецепты, соответствующие имени

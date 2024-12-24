@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const recipeController = require('./recipe.controller');
-const { authenticateToken } = require('../../middleware/authMiddleware');
+const { authenticateToken, authorizeRole } = require('../../shared/middlewares/authMiddleware');
 
 // Маршрут для получения данных рецепта по его ID
 router.get('/:id', authenticateToken, recipeController.getRecipeById);

@@ -60,12 +60,12 @@ const RecipePage = ({ token }) => {
             {favoriteMessage && <p className="favorite-message">{favoriteMessage}</p>}
 
             {recipe.image && recipe.image.image_url && (
-                <img src={recipe.image.image_url} alt={recipe.name} className="recipe-image" />
+                <img src={recipe.image.image_url} alt={recipe.name} className="recipe-image"/>
             )}
 
             <p>{recipe.description || 'No description available'}</p>
             <p><strong>Cooking Time:</strong> {recipe.cooking_time || 'N/A'} minutes</p>
-
+            <hr></hr>
             <h2>Ingredients</h2>
             <ul>
                 {recipe.products?.length > 0
@@ -76,7 +76,7 @@ const RecipePage = ({ token }) => {
                     ))
                     : <li>No ingredients listed</li>}
             </ul>
-
+            <hr></hr>
             <h2>Steps</h2>
             <ul>
                 {recipe.steps?.length > 0
@@ -84,7 +84,7 @@ const RecipePage = ({ token }) => {
                         const stepImage = recipe.stepImages?.find(image => image.step_number === index + 1);
                         return (
                             <li key={index}>
-                                <p>Step {index + 1}: {step}</p>
+                                <p>Step {index + 1}</p>
                                 {stepImage && stepImage.image_data && (
                                     <img
                                         src={stepImage.image_data}
@@ -92,12 +92,13 @@ const RecipePage = ({ token }) => {
                                         className="step-image"
                                     />
                                 )}
+                                {step}
                             </li>
                         );
                     })
                     : <li>No steps available</li>}
             </ul>
-
+            <hr></hr>
             <h3>Tags</h3>
             <p>{recipe.tags.length > 0 ? recipe.tags.map(tag => tag.name).join(', ') : 'No tags available'}</p>
 
@@ -106,16 +107,16 @@ const RecipePage = ({ token }) => {
                 <h3>Поделиться этим рецептом:</h3>
                 <div className="share-buttons">
                     <TelegramShareButton url={currentUrl} title={`Рецепт: ${recipe.name}`}>
-                        <TelegramIcon size={32} round />
+                        <TelegramIcon size={32} round/>
                     </TelegramShareButton>
                     <FacebookShareButton url={currentUrl} quote={`Рецепт: ${recipe.name}`}>
-                        <FacebookIcon size={32} round />
+                        <FacebookIcon size={32} round/>
                     </FacebookShareButton>
                     <TwitterShareButton url={currentUrl} title={`Рецепт: ${recipe.name}`}>
-                        <TwitterIcon size={32} round />
+                        <TwitterIcon size={32} round/>
                     </TwitterShareButton>
                     <WhatsappShareButton url={currentUrl} title={`Рецепт: ${recipe.name}`}>
-                        <WhatsappIcon size={32} round />
+                        <WhatsappIcon size={32} round/>
                     </WhatsappShareButton>
                 </div>
             </div>

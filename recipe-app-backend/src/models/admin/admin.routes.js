@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const adminController = require('./admin.controller');
-const { authenticateToken, authorizeRole } = require('../../middleware/authMiddleware');
+const { authenticateToken, authorizeRole } = require('../../shared/middlewares/authMiddleware');
 
 // Маршруты для управления рецептами
 router.post('/recipes', authenticateToken, authorizeRole('admin'), adminController.createRecipe);
@@ -9,6 +9,9 @@ router.put('/recipes/:id', authenticateToken, authorizeRole('admin'), adminContr
 router.delete('/recipes/:id', authenticateToken, authorizeRole('admin'), adminController.deleteRecipe);
 
 // Маршруты для управления пользователями
+router.get('/users', authenticateToken, authorizeRole('admin'), adminController.getAllUsers); // Получение всех пользователей
+router.get('/users/:id', authenticateToken, authorizeRole('admin'), adminController.getUserById); // Получение пользователя по ID
+router.post('/users/recipes', authenticateToken, authorizeRole('admin'), adminController.getUserRecipesAndProducts); // Получение рецептов и продуктов пользователя
 router.post('/users', authenticateToken, authorizeRole('admin'), adminController.createUser);
 router.put('/users/:id', authenticateToken, authorizeRole('admin'), adminController.updateUser);
 router.delete('/users/:id', authenticateToken, authorizeRole('admin'), adminController.deleteUser);
