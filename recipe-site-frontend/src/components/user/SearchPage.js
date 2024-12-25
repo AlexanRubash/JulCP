@@ -171,7 +171,7 @@ const SearchPage = ({ token }) => {
 
             {/* Точные рецепты */}
             <div className="recipe-list exact-recipes">
-                <h3>Точное совпадение</h3>
+                <h3>Exact recipes</h3>
                 <div className="recipe-grid">
                     {exactRecipes.length > 0 ? (
                         exactRecipes.map((recipe) => (

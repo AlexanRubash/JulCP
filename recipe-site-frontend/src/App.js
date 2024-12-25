@@ -26,7 +26,8 @@ import AdminCategoryPage from "./components/admin/AdminCategoryPage";
 import ProductPage from "./components/user/ProductPage";
 import ProductsPage from "./components/user/ProductsPage";
 import AdminUserPage from "./components/admin/AdminUserPage";
-import AdminUsersPage from "./components/admin/AdminUsersPage"; // Страница администратора
+import AdminUsersPage from "./components/admin/AdminUsersPage";
+import {refreshAccessToken} from "./api"; // Страница администратора
 
 function App() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -79,6 +80,35 @@ function App() {
                 console.error('Invalid token', error);
             }
         }
+    }, []);
+
+    const checkTokenExpirationAndRefresh = async () => {
+        const savedToken = Cookies.get('token');
+        const refreshToken = Cookies.get('refreshToken'); // Храните refreshToken в куках
+
+        if (savedToken) {
+            const decodedToken = jwtDecode(savedToken);
+            const currentTime = Date.now() / 1000;
+
+            // Если токен истекает в ближайшее время, обновляем его
+            if (decodedToken.exp < currentTime + 60) { // Обновляем за минуту до истечения
+                try {
+                    const newAccessToken = await refreshAccessToken(refreshToken);
+                    Cookies.set('token', newAccessToken, { expires: 7, secure: true, sameSite: 'Strict' });
+                    setToken(newAccessToken);
+                    console.log(jwtDecode(token));
+                } catch (error) {
+                    console.error('Failed to refresh token:', error);
+                    handleLogout(); // Если не удалось обновить, выполняем логаут
+                }
+            }
+        }
+    };
+    useEffect(() => {
+        const interval = setInterval(() => {
+            checkTokenExpirationAndRefresh();
+        }, 5 * 60 * 1000); // Проверяем каждые 5 минут
+        return () => clearInterval(interval);
     }, []);
 
     return (

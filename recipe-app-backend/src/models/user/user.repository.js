@@ -6,6 +6,10 @@ const createUser = async (username, hashedPassword, role) => {
         [username, hashedPassword, role]
     );
 };
+const findUserById = async (userId) => {
+    const result = await db.query('SELECT * FROM users WHERE user_id = $1', [userId]);
+    return result.rows[0];
+};
 
 const findUserByUsername = async (username) => {
     const result = await db.query('SELECT * FROM users WHERE username = $1', [username]);
@@ -326,5 +330,6 @@ module.exports = { createUser, findUserByUsername, saveRefreshToken, findRefresh
     getUserProductById,
     deleteUserProduct,
     getFavoriteRecipes,
-    getUserRecipes
+    getUserRecipes,
+    findUserById
 };

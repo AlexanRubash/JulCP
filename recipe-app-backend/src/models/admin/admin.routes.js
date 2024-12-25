@@ -12,14 +12,14 @@ router.delete('/recipes/:id', authenticateToken, authorizeRole('admin'), adminCo
 router.get('/users', authenticateToken, authorizeRole('admin'), adminController.getAllUsers); // Получение всех пользователей
 router.get('/users/:id', authenticateToken, authorizeRole('admin'), adminController.getUserById); // Получение пользователя по ID
 router.post('/users/recipes', authenticateToken, authorizeRole('admin'), adminController.getUserRecipesAndProducts); // Получение рецептов и продуктов пользователя
-router.post('/users', authenticateToken, authorizeRole('admin'), adminController.createUser);
-router.put('/users/:id', authenticateToken, authorizeRole('admin'), adminController.updateUser);
-router.delete('/users/:id', authenticateToken, authorizeRole('admin'), adminController.deleteUser);
+router.post('/users', authenticateToken, authorizeRole('admin'), adminController.createUser);//Создание пользователя
+router.put('/users/:id', authenticateToken, authorizeRole('admin'), adminController.updateUser);//Обновление пользователя
+router.delete('/users/:id', authenticateToken, authorizeRole('admin'), adminController.deleteUser);// Удаление пользователя
 
 // Маршруты для управления продуктами
-router.post('/products', authenticateToken, authorizeRole('admin'), adminController.createProduct);
-router.put('/products/:id', authenticateToken, authorizeRole('admin'), adminController.updateProduct);
-router.delete('/products/:id', authenticateToken, authorizeRole('admin'), adminController.deleteProduct);
+router.post('/products', authenticateToken, authorizeRole('admin'), adminController.createProduct);//Создание продукта
+router.put('/products/:id', authenticateToken, authorizeRole('admin'), adminController.updateProduct);//Обновление продукта
+router.delete('/products/:id', authenticateToken, authorizeRole('admin'), adminController.deleteProduct);//Удаление продукта
 router.get('/products', authenticateToken, authorizeRole('admin'), adminController.getProducts); // Получение всех продуктов
 router.get('/products/:id', authenticateToken, authorizeRole('admin'), adminController.getProductById); // Получение конкретного продукта
 

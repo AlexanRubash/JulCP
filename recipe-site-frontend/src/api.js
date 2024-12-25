@@ -38,6 +38,27 @@ export const loginUser = async (userData) => {
         throw error;
     }
 };
+export const refreshAccessToken = async (refreshToken) => {
+    try {
+        const response = await fetch(`${API_URL}/users/refresh-token`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ token: refreshToken }),
+        });
+        if (response.ok) {
+            const data = await response.json();
+            return data.accessToken;
+        } else {
+            throw new Error('Failed to refresh access token');
+        }
+    } catch (error) {
+        console.error('Error refreshing access token:', error);
+        throw error;
+    }
+};
+
 export const fetchRecipeById = async (id, token) => {
     try {
         const response = await fetch(`${API_URL}/recipes/${id}`, {

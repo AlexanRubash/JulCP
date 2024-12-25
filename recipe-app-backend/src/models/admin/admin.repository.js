@@ -284,12 +284,19 @@ const updateCategory = async (categoryId, name) => {
 };
 
 const deleteCategory = async (categoryId) => {
-    const query = `
-        DELETE FROM categories
-        WHERE category_id = $1
-        RETURNING category_id, name;
-    `;
-    const result = await db.query(query, [categoryId]);
+    const resetProductsCategoryQuery = `
+            UPDATE products
+            SET category_id = NULL
+            WHERE category_id = $1;
+        `;
+    await db.query(resetProductsCategoryQuery, [categoryId]);
+    const deleteCategoryQuery = `
+            DELETE FROM categories
+            WHERE category_id = $1
+            RETURNING category_id, name;
+        `;
+    const result = await db.query(deleteCategoryQuery, [categoryId]);
+
     return result.rows[0]; // Возвращаем удаленную категорию, если нужно
 };
 

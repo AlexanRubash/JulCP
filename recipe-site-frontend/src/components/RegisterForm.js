@@ -33,13 +33,6 @@ function RegisterForm() {
                 value={formData.password}
                 required
             />
-            <input
-                type="text"
-                name="role"
-                placeholder="Role (optional)"
-                onChange={handleChange}
-                value={formData.role}
-            />
             <button type="submit">Register</button>
         </form>
     );

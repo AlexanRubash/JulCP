@@ -42,7 +42,7 @@ const FavoritesPage = ({ token, onNavigate }) => {
                             {/* Картинка рецепта */}
                             <div className="recipe-image">
                                 <img
-                                    src={recipe.image_url || 'https://via.placeholder.com/150'}
+                                    src={recipe.image_url || 'https://via.placeholder.com/250'}
                                     alt={recipe.name}
                                     className="recipe-thumbnail"
                                 />

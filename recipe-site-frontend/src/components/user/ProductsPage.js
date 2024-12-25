@@ -107,6 +107,7 @@ const ProductsPage = ({ token }) => {
                                 <h3>{product.name}</h3>
                             </div>
                             <p>{product.description}</p>
+                            <hr></hr>
                         </div>
                     ))}
                 </div>
@@ -132,9 +133,10 @@ const ProductsPage = ({ token }) => {
                                                     className="product-name"
                                                     onClick={() => handleProductClick(product.product_id)}
                                                 >
-                                                    <h3>{product.name}</h3>
+                                                    <h>{product.name}</h>
                                                 </div>
                                                 <p>{product.description}</p>
+                                                <hr></hr>
                                             </div>
                                         ))}
                                 </div>

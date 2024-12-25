@@ -27,14 +27,23 @@ const logoutUser = async (token) => {
     await userRepository.deleteRefreshToken(token);
 };
 
-const refreshAccessToken = async (token) => {
-    const storedToken = await userRepository.findRefreshToken(token);
-    if (!storedToken) {
-        throw new Error('Invalid refresh token');
+const refreshAccessToken = async (req, res) => {
+    try {
+        const { token } = req.body;
+        const decoded = jwt.verify(token, process.env.JWT_REFRESH_SECRET);
+        const user = await userRepository.findUserById(decoded.user_id);
+
+        if (!user) {
+            throw new Error('User not found');
+        }
+
+        const newAccessToken = generateAccessToken({ user_id: user.user_id, role: user.role });
+        res.json({ accessToken: newAccessToken });
+    } catch (error) {
+        res.status(403).json({ message: 'Invalid refresh token' });
     }
-    const user = jwt.verify(token, process.env.JWT_REFRESH_SECRET);
-    return generateAccessToken({ user_id: user.user_id, role: user.role });
 };
+
 
 // Функции для работы с рецептами
 const createRecipe = async (recipeData, userId) => {

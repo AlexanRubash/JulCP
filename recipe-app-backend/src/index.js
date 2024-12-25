@@ -1,9 +1,9 @@
-require('dotenv').config();
+require('dotenv').config({ path: './recipe-app-backend/.env' });
 const express = require('express');
 const cors = require('cors');
-const userRoutes = require('./routes/userRoutes');
-const recipeRoutes = require('./routes/recipeRoutes');
-const adminRoutes = require('./routes/adminRecipeRoutes');
+const userRoutes = require('./models/user/user.routes');
+const recipeRoutes = require('./models/recipe/recipe.routes');
+const adminRoutes = require('./models/admin/admin.routes');
 const path = require("node:path");
 const app = express();
 

@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { fetchUserProducts, deleteUserProduct, updateUserProduct, createUserProduct } from '../../api';
+import Select from "react-select";
+import {fetchCategories} from "../../api/product";
 
 const UserProductPage = ({ token }) => {
     const [products, setProducts] = useState([]);
@@ -12,6 +14,23 @@ const UserProductPage = ({ token }) => {
         description: '',
         category_id: '', // Сюда можно передавать пустую строку, если категория не обязательна
     });
+    const [categories, setCategories] = useState([]);
+    useEffect(() => {
+        const loadCategories = async () => {
+            try {
+                const data = await fetchCategories(token);
+                const categoryOptions = data.map(category => ({
+                    value: category.category_id,
+                    label: category.name,
+                }));
+                setCategories(categoryOptions);
+            } catch (error) {
+                console.error('Error loading categories:', error);
+            }
+        };
+
+        loadCategories();
+    }, [token]);
 
     // Функция для загрузки всех продуктов
     useEffect(() => {
@@ -128,16 +147,20 @@ const UserProductPage = ({ token }) => {
                         onChange={(e) => setNewProduct({ ...newProduct, description: e.target.value })}
                         placeholder="Описание"
                     />
-                    <input
-                        type="text"
-                        value={newProduct.category_id}
-                        onChange={(e) => setNewProduct({ ...newProduct, category_id: e.target.value })}
-                        placeholder="ID категории (необязательно)"
+                    <Select
+                        options={categories}
+                        value={categories.find(cat => cat.value === newProduct.category_id) || null}
+                        onChange={(selectedOption) =>
+                            setNewProduct({ ...newProduct, category_id: selectedOption?.value || '' })
+                        }
+                        placeholder="Выберите категорию"
+                        isClearable
                     />
                     <button onClick={handleCreateProduct}>Добавить</button>
                     <button onClick={() => setIsAdding(false)}>Отмена</button>
                 </div>
             )}
+
 
             <div className="product-list">
                 {filteredProducts.map((product) => (

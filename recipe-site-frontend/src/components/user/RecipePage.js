@@ -92,6 +92,7 @@ const RecipePage = ({ token }) => {
                                         className="step-image"
                                     />
                                 )}
+                                <br/>
                                 {step}
                             </li>
                         );

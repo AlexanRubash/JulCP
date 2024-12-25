@@ -69,11 +69,13 @@ background: #d9dad9;
 .recipe-image {
     text-align: center;
     margin-bottom: 10px;
+
 }
 
 .recipe-thumbnail {
-    max-width: 100%;
     height: auto;
     border-radius: 5px;
     object-fit: cover;
+    max-height: 250px;
+    max-width: 250px;
 }
