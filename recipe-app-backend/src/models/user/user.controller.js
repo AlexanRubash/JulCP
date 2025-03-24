@@ -5,9 +5,9 @@ const userService = require('./user.service');
  */
 const registerUser = async (req, res) => {
     try {
-        const { username, password, role } = req.body;
-        await userService.registerUser(username, password, role);
-        res.status(201).json({ message: 'User registered successfully' });
+        const { username, password } = req.body;
+        const tokens = await userService.registerUser(username, password); // Получаем токены
+        res.status(201).json(tokens); // Возвращаем токены
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Error registering user' });

@@ -6,8 +6,19 @@ const productRepository = require('../product/product.repository')
 
 const registerUser = async (username, password, role = 'user') => {
     const hashedPassword = await bcrypt.hash(password, 10);
-    return userRepository.createUser(username, hashedPassword, role);
+    const user = await userRepository.createUser(username, hashedPassword, role);
+
+    // Генерация токенов после успешной регистрации
+    const accessToken = generateAccessToken({ user_id: user.user_id, role: user.role });
+    const refreshToken = generateRefreshToken({ user_id: user.user_id, role: user.role });
+
+    // Сохраняем refreshToken в базе данных
+    await userRepository.saveRefreshToken(refreshToken, user.user_id);
+
+    // Возвращаем токены
+    return { accessToken, refreshToken };
 };
+
 
 const loginUser = async (username, password) => {
     const user = await userRepository.findUserByUsername(username);

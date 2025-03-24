@@ -1,11 +1,15 @@
 const db = require('../../shared/database/db');
 
 const createUser = async (username, hashedPassword, role) => {
-    await db.query(
-        'INSERT INTO users (username, password_hash, role) VALUES ($1, $2, $3)',
+    const result = await db.query(
+        'INSERT INTO users (username, password_hash, role) VALUES ($1, $2, $3) RETURNING user_id, username, role',
         [username, hashedPassword, role]
     );
+
+    // Возвращаем параметры созданного пользователя
+    return result.rows[0]; // Здесь возвращаются user_id, username и role
 };
+
 const findUserById = async (userId) => {
     const result = await db.query('SELECT * FROM users WHERE user_id = $1', [userId]);
     return result.rows[0];
@@ -46,7 +50,7 @@ const createUserRecipe = async (recipeData, userId) => {
     const recipeId = recipeResult.rows[0].recipe_id;
 
     // Добавление продуктов в рецепт
-    for (let { product_id, quantity, product_name } of products) {
+    for (let { product_id, quantity, product_name, unit_id } of products) {
         if (product_id === null) {
             // Ищем продукт по имени в базе данных
             const productResult = await db.query(
@@ -61,11 +65,14 @@ const createUserRecipe = async (recipeData, userId) => {
             product_id = productResult.rows[0].product_id; // Обновляем product_id с найденного продукта
         }
 
+        // Если unit_id не указан, ставим 145 (граммы)
+        unit_id = unit_id ?? 145;
+
         // Вставляем продукт в рецепт
         await db.query(
-            `INSERT INTO recipe_products (recipe_id, product_id, quantity) 
-             VALUES ($1, $2, $3);`,
-            [recipeId, product_id, quantity]
+            `INSERT INTO recipe_products (recipe_id, product_id, quantity_value, unit_id) 
+             VALUES ($1, $2, $3, $4);`,
+            [recipeId, product_id, quantity, unit_id]
         );
     }
 
@@ -104,6 +111,7 @@ const createUserRecipe = async (recipeData, userId) => {
 
     return recipeId;
 };
+
 
 const updateUserRecipe = async (id, recipeData, userId) => {
     const { name, description, cooking_time, products, tags, steps, image_url, step_images } = recipeData;

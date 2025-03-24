@@ -145,6 +145,24 @@ const getProductIdsByNames = async (productNames, limit, offset) => {
     // Вызываем функцию из репозитория для поиска идентификаторов
     return await recipeRepository.findProductIdsByNames(productNames, limit, offset);
 };
+const fetchAllRecipes = async (userId, targetCalories, targetProtein, targetFat) => {
+    const recipes = await recipeRepository.getAllRecipes(userId, targetCalories, targetProtein, targetFat);
+
+    return Promise.all(
+        recipes.map(async (recipe) => {
+            const products = await recipeRepository.getRecipeProducts(recipe.recipe_id);
+            const tags = await recipeRepository.getRecipeTags(recipe.recipe_id);
+            const image = await recipeRepository.getRecipeImage(recipe.recipe_id);
+
+            return {
+                ...recipe,
+                products,
+                tags,
+                image
+            };
+        })
+    );
+};
 
 
 module.exports = {
@@ -156,4 +174,5 @@ module.exports = {
     getProductIdsByNames,
     fetchRecipeByName,  // Новый метод
     fetchRecipesByTags,
+    fetchAllRecipes
 };

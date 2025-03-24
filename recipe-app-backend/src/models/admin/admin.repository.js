@@ -224,7 +224,7 @@ const deleteProduct = async (id) => {
 
 const getProducts = async (limit, offset) => {
     const query = `
-        SELECT product_id, name, description, category_id, image
+        SELECT product_id, name, description, category_id
         FROM products
     `;
     const result = await db.query(query);

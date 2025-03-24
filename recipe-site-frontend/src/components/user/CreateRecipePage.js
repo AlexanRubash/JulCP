@@ -18,7 +18,15 @@ const CreateRecipePage = ({ token }) => {
     const [error, setError] = useState('');
     const [currentImageUrl, setCurrentImageUrl] = useState(null); // URL текущего изображения
     const [success, setSuccess] = useState('');
+    const unitAbbreviationToId = {
+        oz: 1, cup: 4, tsp: 5, lb: 15, tbsp: 47, g: 145, l: 588, can: 1267, ml: 1906, kg: 4613, pcs: 2
+    };
 
+    const unitOptions = Object.entries(unitAbbreviationToId).map(([abbr, id]) => ({
+        value: id,
+        label: abbr
+    }));
+    
     const handleImageChange = (e) => {
         const file = e.target.files[0];
         setImageFile(file);
@@ -40,8 +48,15 @@ const CreateRecipePage = ({ token }) => {
     const handleProductChange = (index, field, value) => {
         const updatedProducts = [...products];
         updatedProducts[index][field] = value;
+
+        // Если поле unit_id = null, устанавливаем значение по умолчанию (граммы)
+        if (field === "unit_id" && value === null) {
+            updatedProducts[index].unit_id = 145;
+        }
+
         setProducts(updatedProducts);
     };
+
 
     const handleSelectProduct = (selectedOption, index) => {
         const updatedProducts = [...products];
@@ -51,8 +66,9 @@ const CreateRecipePage = ({ token }) => {
     };
 
     const handleAddProduct = () => {
-        setProducts([...products, { product_id: '', name: '', quantity: '' }]);
+        setProducts([...products, { product_id: '', name: '', quantity: '', unit_id: 145 }]);
     };
+
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -88,6 +104,7 @@ const CreateRecipePage = ({ token }) => {
                 products: products.map((p) => ({
                     product_id: Number(p.product_id),
                     quantity: p.quantity,
+                    unit_id: p.unit_id || 145, // Если unit_id нет, ставим 145 (граммы)
                     product_name: p.name,
                 })),
                 tags: tags.map((t) => t.value),
@@ -97,6 +114,7 @@ const CreateRecipePage = ({ token }) => {
                     image_data: stepImages[index] || '',
                 })),
             };
+
 
             const newRecipe = await createRecipe(recipeData, token);
 
@@ -165,11 +183,19 @@ const CreateRecipePage = ({ token }) => {
                                 onChange={(e) => handleProductChange(index, 'quantity', e.target.value)}
                                 required
                             />
+                            <select
+                                value={product.unit_id || 145} // По умолчанию ставим граммы (145)
+                                onChange={(e) => handleProductChange(index, "unit_id", Number(e.target.value))}
+                            >
+                                {unitOptions.map((unit) => (
+                                    <option key={unit.value} value={unit.value}>
+                                        {unit.label}
+                                    </option>
+                                ))}
+                            </select>
                             <button
                                 type="button"
-                                onClick={() =>
-                                    setProducts(products.filter((_, productIndex) => productIndex !== index))
-                                }
+                                onClick={() => setProducts(products.filter((_, productIndex) => productIndex !== index))}
                             >
                                 Remove
                             </button>

@@ -70,6 +70,7 @@ const Header = ({ onLogout, onNavigate, token }) => {
                 <button className="nav-item" onClick={() => handleNavigation('products')}>
                     All products
                 </button>
+
             </nav>
             <div className="search-container">
                 <input
@@ -129,6 +130,18 @@ const Header = ({ onLogout, onNavigate, token }) => {
                             onClick={() => handleNavigation('my-products')}
                         >
                             My Products
+                        </button>
+                        <button
+                            className="menu-item menu-button"
+                            onClick={() => handleNavigation('user-consumed-products')}
+                        >
+                            user-consumed-products
+                        </button>
+                        <button
+                            className="menu-item menu-button"
+                            onClick={() => handleNavigation('user-meal-plan')}
+                        >
+                            user-meal-plan
                         </button>
                         <button
                             className="menu-item logout-button"

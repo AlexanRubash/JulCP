@@ -143,6 +143,23 @@ const getRecipesByTags = async (req, res) => {
         res.status(500).json({ message: 'Internal server error' });
     }
 };
+const getAllRecipes = async (req, res) => {
+    const { target_calories, target_protein, target_fat } = req.query;
+    const userId = req.user.user_id;
+
+    if (!target_calories || !target_protein || !target_fat) {
+        return res.status(400).json({ message: 'Missing required query parameters' });
+    }
+
+    try {
+        const recipes = await recipeService.fetchAllRecipes(userId, target_calories, target_protein, target_fat);
+        res.status(200).json(recipes);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
 
 // Экспорт функций
 module.exports = {
@@ -152,5 +169,6 @@ module.exports = {
     getRecipesByExactProductsFromString,
     getRecipesByPartialProductsFromString,
     getRecipeByName,  // Новый экспорт
-    getRecipesByTags
+    getRecipesByTags,
+    getAllRecipes
 };

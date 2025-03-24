@@ -8,6 +8,9 @@ const adminRoutes = require('./models/admin/admin.routes');
 const fs = require('fs'); // Для работы с файловой системой
 const productRoutes = require('./models/product/product.routes'); // Подключаем маршруты для продуктов
 const tagRoutes = require('./models/tags/tag.routes')
+const user_parametersRoutes = require('./models/user_parameters/user_parameters.routes')
+const userUnwantedProductsRoutes = require('./models/user_unwanted_products/user_unwanted_products.routes');
+const userConsumedProductsRoutes = require('./models/user_consumed_products/user_consumed_products.routes');
 const router = express.Router();
 
 // Настройка для multer
@@ -62,4 +65,7 @@ router.use('/admin', adminRoutes);
 
 router.use('/tags', tagRoutes)
 router.use('/products', productRoutes);
+router.use('/user-parameters', user_parametersRoutes);
+router.use('/user-unwanted-products', userUnwantedProductsRoutes);
+router.use('/user-consumed-products', userConsumedProductsRoutes);
 module.exports = router;

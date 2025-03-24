@@ -36,7 +36,7 @@ const getRecipesByTag = async (tag) => {
 // Получение продуктов рецепта
 const getRecipeProducts = async (recipeId) => {
     const query = `
-        SELECT p.product_id, p.name, rp.quantity
+        SELECT p.product_id, p.name, quantity_value
         FROM recipe_products rp
         JOIN products p ON rp.product_id = p.product_id
         WHERE rp.recipe_id = $1;
@@ -186,6 +186,26 @@ const getRecipesByProduct = async (productId) => {
         created_by: row.is_global ? null : row.created_by // Если не глобальный, возвращаем created_by
     }));
 };
+const getAllRecipes = async (userId, targetCalories, targetProtein, targetFat) => {
+    const query = `
+        SELECT r.recipe_id, r.name, r.calories, r.proteins, r.fats, r.carbohydrates
+        FROM recipes r
+        WHERE r.calories > 0
+          AND r.calories <= $1
+          AND r.proteins <= $2
+          AND r.fats <= $3
+          AND NOT EXISTS (
+              SELECT 1 FROM recipe_products rp
+              JOIN user_unwanted_products uup ON rp.product_id = uup.product_id
+              WHERE rp.recipe_id = r.recipe_id
+                AND uup.user_id = $4
+          )
+        LIMIT 10000;
+    `;
+    const result = await db.query(query, [targetCalories, targetProtein, targetFat, userId]);
+    return result.rows;
+};
+
 module.exports = {
     getRecipeById,
     getRecipesByProduct,
@@ -199,5 +219,6 @@ module.exports = {
     getRecipesByTag,
     getRecipeByName,
     getRecipesByTags,
-    checkIfFavorite
+    checkIfFavorite,
+    getAllRecipes
 };

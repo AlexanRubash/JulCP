@@ -12,7 +12,12 @@ export const registerUser = async (userData) => {
             },
             body: JSON.stringify(userData),
         });
-        return response.ok ? 'User registered successfully' : 'Failed to register user';
+        if (response.ok) {
+            const data = await response.json();
+            return data.accessToken; // Убедитесь, что бэкенд возвращает это поле
+        } else {
+            throw new Error('Invalid credentials');
+        }
     } catch (error) {
         console.error('Error registering user:', error);
     }
@@ -289,6 +294,31 @@ export const searchRecipesByName = async (name, token) => {
         throw error;
     }
 };
+export const fetchAllRecipes = async (token, targetCalories, targetProtein, targetFat) => {
+    try {
+        const url = new URL(`${API_URL}/recipes/all`);
+        // Добавляем параметры в URL
+        url.searchParams.append('target_calories', targetCalories);
+        url.searchParams.append('target_protein', targetProtein);
+        url.searchParams.append('target_fat', targetFat);
+
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to fetch filtered recipes');
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error('Error fetching filtered recipes:', error);
+        throw error;
+    }
+};
 // api.js
 
 // Функция для добавления рецепта в избранное
@@ -460,6 +490,182 @@ export const deleteUserRecipe = async (recipeId, token) => {
         }
     } catch (error) {
         console.error('Error deleting recipe:', error);
+        throw error;
+    }
+};
+export const createUserParameters = async (parameters, token) => {
+    try {
+        const response = await fetch(`${API_URL}/user-parameters/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
+            },
+            body: JSON.stringify(parameters),
+        });
+
+        if (!response.ok) {
+            throw new Error('Ошибка при создании параметров пользователя');
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error('Ошибка при создании параметров пользователя:', error);
+        throw error;
+    }
+};
+export const getUserParameters = async ( token) => {
+    try {
+        const response = await fetch(`${API_URL}/user-parameters/`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error('Ошибка при получении параметров пользователя');
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error('Ошибка при получении параметров пользователя:', error);
+        throw error;
+    }
+};
+// Получение списка нежелательных продуктов пользователя
+export const getUserUnwantedProducts = async (token) => {
+    try {
+        const response = await fetch(`${API_URL}/user-unwanted-products/`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+        });
+
+        if (!response.ok) throw new Error('Failed to fetch unwanted products');
+        return await response.json();
+    } catch (error) {
+        console.error('Error fetching unwanted products:', error);
+        throw error;
+    }
+};
+
+// Добавление нежелательного продукта
+export const addUserUnwantedProduct = async (userId, productId, token) => {
+    try {
+        const response = await fetch(`${API_URL}/user-unwanted-products/${productId}`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+        });
+
+        if (!response.ok) throw new Error('Failed to add unwanted product');
+        return await response.json();
+    } catch (error) {
+        console.error('Error adding unwanted product:', error);
+        throw error;
+    }
+};
+
+// Удаление нежелательного продукта
+export const removeUserUnwantedProduct = async (userId, productId, token) => {
+    try {
+        const response = await fetch(`${API_URL}/user-unwanted-products/${productId}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ productId }),
+        });
+
+        if (!response.ok) throw new Error('Failed to remove unwanted product');
+        return await response.json();
+    } catch (error) {
+        console.error('Error removing unwanted product:', error);
+        throw error;
+    }
+};
+// Добавление съеденного продукта
+export const addConsumedProduct = async (productData, token) => {
+    try {
+        const response = await fetch(`${API_URL}/user-consumed-products/`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(productData),
+        });
+
+        if (!response.ok) throw new Error('Ошибка при добавлении продукта');
+        return await response.json();
+    } catch (error) {
+        console.error('Ошибка при добавлении съеденного продукта:', error);
+        throw error;
+    }
+};
+// Добавление съеденного рецепта
+export const addConsumedRecipe = async (recipeData, token) => {
+    try {
+        const response = await fetch(`${API_URL}/user-consumed-products/`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(recipeData),
+        });
+
+        if (!response.ok) throw new Error('Ошибка при добавлении рецепта');
+        return await response.json();
+    } catch (error) {
+        console.error('Ошибка при добавлении съеденного рецепта:', error);
+        throw error;
+    }
+};
+
+// Получение съеденных продуктов за дату (POST-запрос, передаем дату в body)
+export const getConsumedProductsByDate = async (date, token) => {
+    try {
+        const response = await fetch(`${API_URL}/user-consumed-products/date`, {
+            method: 'POST', // Теперь используем POST
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ date }) // Передаем дату в body
+        });
+
+        if (!response.ok) throw new Error('Ошибка при получении продуктов');
+        return await response.json();
+    } catch (error) {
+        console.error('Ошибка при получении съеденных продуктов:', error);
+        throw error;
+    }
+};
+
+
+// Удаление съеденного продукта
+export const deleteConsumedProduct = async (productId, token) => {
+    try {
+        const response = await fetch(`${API_URL}/user-consumed-products/${productId}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+        });
+
+        if (!response.ok) throw new Error('Ошибка при удалении продукта');
+        return await response.json();
+    } catch (error) {
+        console.error('Ошибка при удалении съеденного продукта:', error);
         throw error;
     }
 };

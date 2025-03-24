@@ -25,8 +25,12 @@ import AdminTagPage from "./components/admin/AdminTagPage";
 import AdminCategoryPage from "./components/admin/AdminCategoryPage";
 import ProductPage from "./components/user/ProductPage";
 import ProductsPage from "./components/user/ProductsPage";
+import UserParametersForm  from "./components/user/UserParametersForm";
 import AdminUserPage from "./components/admin/AdminUserPage";
 import AdminUsersPage from "./components/admin/AdminUsersPage";
+import UnwantedProductsForm from './components/user/UnwantedProductsForm';
+import ConsumedProductsForm from './components/user/ConsumedProductsForm';
+import MealPlanForm from './components/user/MealPlanForm';
 import {refreshAccessToken} from "./api"; // Страница администратора
 
 function App() {
@@ -131,6 +135,10 @@ function App() {
                             <Route path="/favorites" element={<FavoritesPage token={token} onNavigate={handleNavigate} />} />
                             <Route path="/my-products" element={<UserProductPage token={token} onNavigate={handleNavigate} />} />
                             <Route path="/products" element={<ProductsPage token={token} onNavigate={handleNavigate} />} />
+                            <Route path="/user-parameters/:userId" element={<UserParametersForm token={token} onNavigate={handleNavigate}/>} />
+                            <Route path="/user-meal-plan" element={<MealPlanForm token={token} onNavigate={handleNavigate}/>} />
+                            <Route path="/user-unwated-products/:userId" element={<UnwantedProductsForm token={token} onNavigate={handleNavigate}/>} />
+                            <Route path="/user-consumed-products" element={<ConsumedProductsForm token={token} onNavigate={handleNavigate}/>} />
                             <Route path="/product/:productId" element={<ProductPage token={token} onNavigate={handleNavigate} />} />
                             <Route path="/admin" element={<AdminPage token={token} onNavigate={handleNavigate}/>} /> {/* Страница админа */}
                             <Route path="/admin/update-recipe/:recipeId" element={<AdminUpdateRecipePage token={token} onNavigate={handleNavigate}/>} /> {/* Страница админа */}
@@ -146,7 +154,7 @@ function App() {
                         <>
                             <Route path="/" element={<HomePage onNavigate={handleNavigate} />} />
                             <Route path="/login" element={<LoginForm onLoginSuccess={handleLoginSuccess} onNavigate={handleNavigate} />} />
-                            <Route path="/register" element={<RegisterForm onNavigate={handleNavigate} />} />
+                            <Route path="/register" element={<RegisterForm onLoginSuccess={handleLoginSuccess} onNavigate={handleNavigate} />} />
                         </>
                     )}
                 </Routes>
